@@ -1,4 +1,5 @@
-import express from 'express';
+import express, { type Router } from 'express';
+import { domainError } from './routes.js';
 import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
 import type { Logger } from 'pino';
@@ -16,13 +17,13 @@ async function withTimeout(task: () => Promise<unknown>, timeoutMs: number) {
   } finally { if (timer) clearTimeout(timer); }
 }
 
-export function createApp(probes: Probes, logger: Logger, timeoutMs = 1500) {
+export function createApp(probes: Probes, logger: Logger, timeoutMs = 1500, routes?: Router) {
   const app = express();
   app.disable('x-powered-by');
   app.use(helmet());
   app.use(pinoHttp({ logger }));
   app.get('/api/health', (_req, res) => {
-    res.json({ status: 'ok', service: 'api', milestone: 2 });
+    res.json({ status: 'ok', service: 'api', milestone: 3 });
   });
   app.get('/api/ready', async (_req, res) => {
     const entries = await Promise.all(Object.entries(probes).map(async ([name, check]) => {
@@ -32,9 +33,11 @@ export function createApp(probes: Probes, logger: Logger, timeoutMs = 1500) {
     const dependencies = Object.fromEntries(entries);
     const ready = Object.values(dependencies).every(value => value === 'ok');
     res.status(ready ? 200 : 503).json({
-      status: ready ? 'ready' : 'degraded', service: 'api', milestone: 2, dependencies
+      status: ready ? 'ready' : 'degraded', service: 'api', milestone: 3, dependencies
     });
   });
+  if (routes) app.use('/api', routes);
+  app.use(domainError);
   app.use((_req, res) => { res.status(404).json({ error: 'Route not found' }); });
   return app;
 }

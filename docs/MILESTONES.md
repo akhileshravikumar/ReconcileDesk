@@ -1,31 +1,17 @@
-# Guided implementation checkpoints
+# Guided checkpoints
 
-| Milestone | Scope | Gate |
+| Milestone | Scope | State |
 |---|---|---|
-| 1 | Windows, Cursor, tools, folder inspection | Environment output reviewed |
-| 2 — current | Local service foundation | Checks and queue smoke test pass on Windows |
-| 3 | Synthetic data, schema, validated imports, matching | Independent expected results; retries create no duplicates |
-| 4 | Authentication, roles, exception workflow, audit | Authorization and state-transition tests |
-| 5 | OpenAI summaries, evaluation, failure handling | Held-out evidence-based rubric; no AI financial writes |
-| 6 | Benchmarks, deployment, demo and portfolio | Measured reports and reproducible demonstration |
+| 1 | Windows, Cursor, tools and folder inspection | Complete |
+| 2 | Local service foundation | User verified; committed as 9917175 |
+| 3 | CSV imports, synthetic data and matching | Implemented; verify update on Windows |
+| 4 | Authentication, roles, investigation and audit | Not started |
+| 5 | OpenAI summaries and evaluation | Not started |
+| 6 | Full-system benchmarks, hosting and portfolio | Not started |
 
-## Confirm before milestone 3
+The seven proposed financial rules were approved by the user and are documented
+in CSV_CONTRACT.md. Do not silently change them.
 
-1. Can a payment have multiple or partial settlements? The initial scope approved
-   exact matching but did not yet define payment-to-settlement cardinality.
-2. Are settlement CSV amounts gross transaction amounts or net amounts after fees?
-3. How are refunds represented, and are partial/multiple refunds in scope?
-4. Are duplicate references invalid rows, quarantined records, or exceptions?
-5. Does a file with invalid rows fail entirely or accept valid rows with a report?
-
-Propose concrete sample CSVs and expected classifications for approval before
-writing the financial schema or dataset generator. Do not try to resolve these
-with an LLM. These are deterministic product rules.
-
-## Decisions that remain open
-
-- Public hosting: the user wants free hosting; external services and sleeping
-  instances have not yet been approved. No cloud services are provisioned.
-- Authentication mechanism and demo-user access.
-- OpenAI model and per-request budget.
-- GitHub repository visibility and remote URL.
+Still open: authentication mechanism, demo-user access, OpenAI model and budget,
+public hosting providers, and GitHub visibility/remote. No cloud services or
+external repositories are provisioned by this update.

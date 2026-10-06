@@ -1,4 +1,4 @@
-name: Foundation checks
+name: Reconciliation checks
 on: [push, pull_request]
 permissions:
   contents: read
@@ -22,6 +22,8 @@ jobs:
       - run: python -m pytest services/ai/tests -q
       - run: docker compose up --build --detach --wait --wait-timeout 180
       - run: docker compose exec -T api npm run smoke --workspace @reconciledesk/api
+      - run: docker compose exec -T api npm run verify:db --workspace @reconciledesk/api
+      - run: docker compose exec -T api npm run verify:data --workspace @reconciledesk/api
       - if: always()
         run: docker compose logs --tail=80
       - if: always()

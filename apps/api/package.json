@@ -12,28 +12,34 @@
     "db:deploy": "prisma migrate deploy",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "fixtures": "node --import tsx src/fixtures.ts",
+    "evaluate": "node --import tsx src/evaluate.ts",
+    "verify:data": "node dist/verify-data.js",
+    "test:db": "vitest run tests/database.integration.test.ts",
+    "verify:db": "node dist/verify-database.js"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "bullmq": "6.3.11",
+    "csv-parse": "7.0.3",
     "express": "5.2.1",
     "helmet": "8.3.0",
+    "ioredis": "6.0.0",
+    "pg": "8.23.1",
     "pino": "10.4.0",
     "pino-http": "11.0.0",
-    "zod": "4.6.5",
-    "@prisma/client": "7.10.0",
-    "@prisma/adapter-pg": "7.10.0",
-    "pg": "8.23.1",
-    "ioredis": "6.0.0",
-    "bullmq": "6.3.11"
+    "zod": "4.6.5"
   },
   "devDependencies": {
-    "prisma": "7.10.0",
-    "tsx": "4.23.15",
-    "vitest": "5.0.3",
-    "supertest": "7.3.1",
-    "@types/node": "24.10.1",
     "@types/express": "5.0.6",
+    "@types/node": "24.10.1",
     "@types/pg": "8.23.1",
-    "@types/supertest": "7.2.1"
+    "@types/supertest": "7.2.1",
+    "prisma": "7.10.0",
+    "supertest": "7.3.1",
+    "tsx": "4.23.15",
+    "vitest": "5.0.3"
   }
 }

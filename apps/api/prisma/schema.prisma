@@ -13,3 +13,96 @@ model SystemMetadata {
   key   String @id
   value String
 }
+
+enum RecordKind {
+  PAYMENT
+  SETTLEMENT
+  REFUND
+}
+enum ImportStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+enum RowOutcome {
+  ACCEPTED
+  DUPLICATE
+  REJECTED
+  QUARANTINED
+}
+model ImportBatch {
+  id String @id @default(uuid())
+  kind RecordKind
+  fileName String
+  contentHash String
+  rawCsv String @db.Text
+  status ImportStatus @default(QUEUED)
+  total Int @default(0)
+  accepted Int @default(0)
+  duplicate Int @default(0)
+  rejected Int @default(0)
+  quarantined Int @default(0)
+  attempts Int @default(0)
+  error String?
+  createdAt DateTime @default(now())
+  completedAt DateTime?
+  rows ImportRow[]
+  records LedgerRecord[]
+  @@unique([kind, contentHash])
+  @@index([status, createdAt])
+}
+model ImportRow {
+  id String @id @default(uuid())
+  batchId String
+  batch ImportBatch @relation(fields: [batchId], references: [id])
+  rowNumber Int
+  outcome RowOutcome
+  reference String?
+  transactionRef String?
+  existingTransactionRef String?
+  reason String?
+  raw Json
+  @@unique([batchId, rowNumber])
+  @@index([outcome])
+}
+model LedgerRecord {
+  kind RecordKind
+  reference String
+  transactionRef String
+  amountPaise BigInt
+  feePaise BigInt @default(0)
+  netPaise BigInt @default(0)
+  currency String @default("INR")
+  occurredAt DateTime
+  fingerprint String
+  importBatchId String
+  importBatch ImportBatch @relation(fields: [importBatchId], references: [id])
+  @@id([kind, reference])
+  @@index([transactionRef])
+}
+model ReconciliationRun {
+  id String @id @default(uuid())
+  ruleVersion String
+  snapshotHash String
+  createdAt DateTime @default(now())
+  paymentCount Int
+  matchedCount Int
+  exceptionCount Int
+  groupCount Int
+  durationMs Int
+  sourceCounts Json
+  items ReconciliationItem[]
+  @@unique([ruleVersion, snapshotHash])
+}
+model ReconciliationItem {
+  id String @id @default(uuid())
+  runId String
+  run ReconciliationRun @relation(fields: [runId], references: [id])
+  transactionRef String
+  status String
+  codes String[]
+  details Json
+  @@unique([runId, transactionRef])
+  @@index([runId, status])
+}

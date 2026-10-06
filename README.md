@@ -1,129 +1,57 @@
 # ReconcileDesk
 
-Payment reconciliation and exception-management portfolio project.
+A local payment reconciliation portfolio application built with React, TypeScript,
+Express, PostgreSQL/Prisma, Redis/BullMQ and a FastAPI service foundation.
 
-## Start here on Windows
+**Current stage: Milestone 3 — CSV imports and deterministic matching.**
 
-```powershell
-Set-Location -LiteralPath 'C:\PROJECTS\ReconcileDesk'
-Get-ChildItem -Force | Select-Object Mode, Name
-git status --short --branch
-docker info --format '{{.OSType}}'
-```
+Start with [docs/MILESTONE_3.md](docs/MILESTONE_3.md) for Windows setup, patching,
+verification, demo expectations, metrics and Git commands. Read
+[docs/CSV_CONTRACT.md](docs/CSV_CONTRACT.md) for the exact format and approved rules.
 
-The Docker command must report `linux`. Then:
+## Implemented
+
+- Persistent CSV jobs and row-level import reports.
+- Validation, duplicate protection and conflicting-record quarantine.
+- Atomic database commits, bounded retries and durable queue dispatch.
+- Integer-paise matching, fee/refund checks, orphan detection and immutable snapshots.
+- Upload interface, paginated reports and exception filtering.
+- Synthetic fixtures, independent expectations, engine evaluation and recovery tests.
+
+Authentication, assignments, investigation notes, resolution workflows, audit
+history, OpenAI summaries and public hosting are later milestones. This release
+remains bound to localhost and uses synthetic data.
+
+## Start locally
+
+With Docker Desktop running Linux containers, run from the root in PowerShell:
 
 ```powershell
 if (-not (Test-Path '.env')) { Copy-Item '.env.example' '.env' }
 npm.cmd ci
 npm.cmd run check
-docker compose config --quiet
 docker compose up --build --detach --wait --wait-timeout 180
-docker compose ps --all
 ```
 
-The first install/build needs internet access to npm, PyPI, and Docker image
-registries. It may take several minutes. `migrate` exiting with code 0 is normal;
-it is a one-off migration job. It must not exit with a nonzero code.
+Open http://localhost:8080. For React hot reload use `npm.cmd run dev:web` and
+http://localhost:5173 while keeping the Docker API running. Rebuild Docker after
+backend/worker changes. `docker compose down` retains database volumes.
 
-Open **http://localhost:8080**. All four service cards should say **Connected**.
-The API is at http://localhost:4000/api/health and the Python service at
-http://localhost:8000/health. Database and Redis ports are not exposed to Windows.
-All published application ports are bound to localhost. This Compose setup is
-for local development, not public hosting.
+## Key files
 
-## Verify this milestone
-
-```powershell
-docker compose exec -T api npm run smoke --workspace '@reconciledesk/api'
-docker compose exec -T ai python -m pytest -q -p no:cacheprovider
-npx.cmd playwright install chromium
-npm.cmd run test:e2e
-```
-
-`npm run check` already checks generation, lint, types, API tests and builds.
-The smoke command checks PostgreSQL migration state, Redis, the worker heartbeat,
-the Python service, and a real BullMQ job round trip. The Playwright tests use
-mocked API responses to test the UI independently; they do not replace the live
-smoke test.
-
-Expected smoke output:
-
-```text
-PASS database
-PASS redis
-PASS worker
-PASS aiService
-PASS queue round trip
-Milestone 2 smoke checks passed.
-```
-
-Send the smoke output, test summaries, and any errors back before milestone 3.
-
-## Record the verified foundation in Git
-
-
-```powershell
-git status --short --branch
-git check-ignore .env
-git add .
-git diff --cached --stat
-git diff --cached --name-only
-git commit -m "chore: add ReconcileDesk service foundation"
-```
-
-
-## File map
-
-| Location | Purpose |
+| Path | Purpose |
 |---|---|
-| `apps/web/src/` | React workspace and live connectivity cards |
-| `apps/api/src/app.ts` | Express liveness/readiness routes |
-| `apps/api/src/server.ts` | Dependency wiring and shutdown |
-| `apps/api/src/worker.ts` | BullMQ diagnostic worker and heartbeat |
-| `apps/api/src/smoke.ts` | Live dependency and queue checks |
-| `apps/api/prisma/` | Prisma schema and initial SQL migration |
-| `apps/api/tests/` | API failure-path and configuration tests |
-| `services/ai/` | FastAPI skeleton and Python tests |
-| `tests/e2e/` | Browser checks with controlled API responses |
-| `infra/nginx.conf` | Frontend hosting and same-origin API proxy |
-| `compose.yaml` | Local services, dependency ordering, persistent volumes |
-| `.github/workflows/ci.yml` | Checks, builds, browser tests and Docker smoke CI |
-| `.cursor/rules/project.mdc` | Automatically applied Cursor project guidance |
-| `AGENTS.md` | Project constraints and review expectations |
-| `docs/` | Architecture, milestone plan, troubleshooting and validation notes |
-| `data/` | Financial fixtures planned for milestone 3 |
-| `metrics/` | Empty performance-report template |
-| `evaluations/` | Empty AI-evaluation template |
+| apps/api/src/domain.ts | CSV validation, duplicate classification, matching |
+| apps/api/src/store.ts | Atomic persistence and reconciliation snapshots |
+| apps/api/src/worker.ts | Queue worker and durable dispatcher |
+| apps/api/src/routes.ts | HTTP contracts |
+| apps/api/prisma/ | Schema and additive migrations |
+| apps/api/tests/ | Unit, API and isolated-database tests |
+| apps/web/src/ | React workspace and reports |
+| data/demo/ | Synthetic CSVs and expected outcomes |
+| services/ai/ | FastAPI foundation; no model calls yet |
+| metrics/, evaluations/ | Measurement templates and local outputs |
 
-## Development loop
-
-For React changes with hot reload, leave Docker running and run:
-
-```powershell
-npm.cmd run dev:web
-```
-
-Open http://localhost:5173. Vite proxies `/api` to the API on port 4000.
-For changes to API, worker, Python, Docker configuration, or the packaged UI:
-
-```powershell
-docker compose up --build --detach --wait --wait-timeout 180
-```
-
-
-## Stop and inspect
-
-```powershell
-docker compose logs --tail 80 api worker ai migrate
-docker compose down
-```
-
-Normal `down` preserves named data volumes. Do not delete volumes to resolve an
-error without first checking the cause. See `docs/TROUBLESHOOTING.md`.
-
-## Cursor task example
-
-> Read AGENTS.md, docs/MILESTONES.md, and the existing source tree. Explain how
-> the readiness endpoint and queue smoke test work. Do not edit files. Identify
-> the product decisions we need before adding the milestone 3 financial schema.
+Read AGENTS.md and inspect existing files before asking Cursor to edit. Review
+changes and run the relevant checks. Do not modify financial rules or proceed
+to later milestones without agreement.

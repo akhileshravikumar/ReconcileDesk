@@ -8,3 +8,9 @@
 
 Package versions are pinned in package.json/package-lock.json and Python
 requirements.txt. Refer to those files for this scaffold's exact dependencies.
+
+Milestone 3 references:
+
+- CSV parsing options: https://csv.js.org/parse/options/
+- Idempotent jobs: https://docs.bullmq.io/patterns/idempotent-jobs
+- Retry behavior: https://docs.bullmq.io/guide/retrying-failing-jobs

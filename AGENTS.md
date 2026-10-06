@@ -1,6 +1,7 @@
 # ReconcileDesk working agreement
 
-Current stage: milestone 2, local service foundation.
+Current stage: milestone 3, CSV imports and deterministic reconciliation.
+Read docs/CSV_CONTRACT.md for the approved financial rules and representation.
 
 - Inspect the existing tree and relevant files before adding or changing files.
 - Work on the requested milestone only. Ask before changing architecture,

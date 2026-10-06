@@ -1,0 +1,61 @@
+{
+  "counts": {
+    "PAYMENT": 9,
+    "SETTLEMENT": 9,
+    "REFUND": 5
+  },
+  "imports": {
+    "PAYMENT": {
+      "total": 13,
+      "accepted": 9,
+      "duplicate": 1,
+      "rejected": 2,
+      "quarantined": 1
+    },
+    "SETTLEMENT": {
+      "total": 9,
+      "accepted": 9,
+      "duplicate": 0,
+      "rejected": 0,
+      "quarantined": 0
+    },
+    "REFUND": {
+      "total": 5,
+      "accepted": 5,
+      "duplicate": 0,
+      "rejected": 0,
+      "quarantined": 0
+    }
+  },
+  "initial": {
+    "DEMO-P001": [],
+    "DEMO-P002": [
+      "MISSING_SETTLEMENT"
+    ],
+    "DEMO-P003": [
+      "AMOUNT_MISMATCH"
+    ],
+    "DEMO-P004": [
+      "MULTIPLE_SETTLEMENTS"
+    ],
+    "DEMO-P005": [
+      "SETTLEMENT_ARITHMETIC"
+    ],
+    "DEMO-P006": [
+      "REFUND_EXCEEDS_PAYMENT"
+    ],
+    "DEMO-P007": [],
+    "DEMO-P008": [
+      "SOURCE_CONFLICT"
+    ],
+    "DEMO-P009": [
+      "MISSING_SETTLEMENT"
+    ],
+    "DEMO-ORPHAN-PAY": [
+      "MISSING_PAYMENT"
+    ],
+    "DEMO-ORPHAN-REF": [
+      "ORPHAN_REFUND"
+    ]
+  }
+}

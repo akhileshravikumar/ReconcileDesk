@@ -1,8 +1,8 @@
 import { PrismaClient } from './generated/prisma/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Redis } from 'ioredis';
-export function createDatabase(url: string) {
-  const adapter = new PrismaPg({ connectionString: url, max: 5, connectionTimeoutMillis: 1000, statement_timeout: 1000 });
+export function createDatabase(url: string, poolSize = 5) {
+  const adapter = new PrismaPg({ connectionString: url, max: poolSize, connectionTimeoutMillis: 1000, statement_timeout: 5000 });
   return new PrismaClient({ adapter });
 }
 export function createRedis(url: string) {

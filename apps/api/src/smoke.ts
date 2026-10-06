@@ -22,7 +22,7 @@ try {
   const result = await job.waitUntilFinished(events, 10000);
   assert.deepEqual(result, { status: 'ok', token });
   console.log('PASS queue round trip');
-  console.log('Milestone 2 smoke checks passed.');
+  console.log('Infrastructure smoke checks passed.');
 } finally {
   await Promise.all([events.close(), queue.close()]);
   clearTimeout(failTimer);

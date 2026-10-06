@@ -1,0 +1,15 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// A harmless migration marker. Business entities arrive in milestone 3.
+model SystemMetadata {
+  key   String @id
+  value String
+}

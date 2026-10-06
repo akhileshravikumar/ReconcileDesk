@@ -1,0 +1,87 @@
+name: reconciledesk
+x-app-env: &app-env
+  DATABASE_URL: postgresql://reconciledesk:${POSTGRES_PASSWORD:-reconciledesk_local_only}@postgres:5432/reconciledesk
+  REDIS_URL: redis://redis:6379
+  AI_SERVICE_URL: http://ai:8000
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: reconciledesk
+      POSTGRES_USER: reconciledesk
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reconciledesk_local_only}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reconciledesk -d reconciledesk"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build: { context: ., target: api }
+    environment: *app-env
+    command: ["npm", "run", "db:deploy", "--workspace", "@reconciledesk/api"]
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  ai:
+    build: ./services/ai
+    ports: ["127.0.0.1:${AI_PORT:-8000}:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+  worker:
+    build: { context: ., target: api }
+    environment: *app-env
+    command: ["node", "apps/api/dist/worker.js"]
+    depends_on:
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+
+  api:
+    build: { context: ., target: api }
+    environment: *app-env
+    ports: ["127.0.0.1:${API_PORT:-4000}:4000"]
+    depends_on:
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+      ai: { condition: service_healthy }
+      worker: { condition: service_started }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+      start_period: 10s
+
+  web:
+    build: { context: ., target: web }
+    ports: ["127.0.0.1:${WEB_PORT:-8080}:80"]
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  postgres_data:
+  redis_data:

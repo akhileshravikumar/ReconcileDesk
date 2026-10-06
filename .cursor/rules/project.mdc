@@ -1,0 +1,9 @@
+---
+description: ReconcileDesk project constraints and implementation workflow
+alwaysApply: true
+---
+Read AGENTS.md and docs/MILESTONES.md before editing.
+Inspect the folder and the existing implementation before creating files.
+Implement only the requested milestone. Ask about unresolved product decisions.
+Explain changed files, why they changed, checks run, and remaining limitations.
+Never replace missing measurements with fabricated successes.

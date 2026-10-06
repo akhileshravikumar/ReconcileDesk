@@ -1,0 +1,29 @@
+{
+  "status": "not_run",
+  "git_commit": null,
+  "measured_at_utc": null,
+  "environment": {
+    "os": null,
+    "cpu": null,
+    "memory_gb": null,
+    "docker_limits": null
+  },
+  "dataset": {
+    "seed": null,
+    "payments": null,
+    "settlements": null,
+    "refunds": null,
+    "exceptions_by_type": null
+  },
+  "runs": [],
+  "summary": {
+    "classification_correctness": null,
+    "duplicate_records_after_retries": null,
+    "import_reconcile_seconds_mean": null,
+    "exception_list_p95_ms": null,
+    "concurrent_users": null
+  },
+  "notes": [
+    "Foundation milestone contains no financial processing benchmark."
+  ]
+}

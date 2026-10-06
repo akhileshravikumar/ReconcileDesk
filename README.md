@@ -3,9 +3,9 @@
 A local payment reconciliation portfolio application built with React, TypeScript,
 Express, PostgreSQL/Prisma, Redis/BullMQ and a FastAPI service foundation.
 
-**Current stage: Milestone 3 — CSV imports and deterministic matching.**
+**Current stage: Milestone 4 — authentication, investigations and audit.**
 
-Start with [docs/MILESTONE_3.md](docs/MILESTONE_3.md) for Windows setup, patching,
+Start with [docs/MILESTONE_4.md](docs/MILESTONE_4.md) for Windows setup, patching,
 verification, demo expectations, metrics and Git commands. Read
 [docs/CSV_CONTRACT.md](docs/CSV_CONTRACT.md) for the exact format and approved rules.
 
@@ -18,8 +18,11 @@ verification, demo expectations, metrics and Git commands. Read
 - Upload interface, paginated reports and exception filtering.
 - Synthetic fixtures, independent expectations, engine evaluation and recovery tests.
 
-Authentication, assignments, investigation notes, resolution workflows, audit
-history, OpenAI summaries and public hosting are later milestones. This release
+- Email/password sign-in, server-side sessions and viewer/operator permissions.
+- Operator assignments, notes, resolution/reopening and stale-edit protection.
+- Transactional audit history with database UPDATE/DELETE protection.
+
+OpenAI summaries and public hosting are later milestones. This release
 remains bound to localhost and uses synthetic data.
 
 ## Start locally
@@ -31,9 +34,10 @@ if (-not (Test-Path '.env')) { Copy-Item '.env.example' '.env' }
 npm.cmd ci
 npm.cmd run check
 docker compose up --build --detach --wait --wait-timeout 180
+docker compose exec -T api npm run seed:demo --workspace '@reconciledesk/api'
 ```
 
-Open http://localhost:8080. For React hot reload use `npm.cmd run dev:web` and
+Save the generated passwords privately. Open http://localhost:8080 and sign in. For React hot reload use `npm.cmd run dev:web` and
 http://localhost:5173 while keeping the Docker API running. Rebuild Docker after
 backend/worker changes. `docker compose down` retains database volumes.
 
@@ -44,7 +48,10 @@ backend/worker changes. `docker compose down` retains database volumes.
 | apps/api/src/domain.ts | CSV validation, duplicate classification, matching |
 | apps/api/src/store.ts | Atomic persistence and reconciliation snapshots |
 | apps/api/src/worker.ts | Queue worker and durable dispatcher |
-| apps/api/src/routes.ts | HTTP contracts |
+| apps/api/src/routes.ts | Protected HTTP contracts |
+| apps/api/src/auth.ts | Passwords, sessions, CSRF and permissions |
+| apps/api/src/investigations.ts | Assignment, notes and workflow |
+| apps/api/src/audit.ts | Transactional audit event creation |
 | apps/api/prisma/ | Schema and additive migrations |
 | apps/api/tests/ | Unit, API and isolated-database tests |
 | apps/web/src/ | React workspace and reports |

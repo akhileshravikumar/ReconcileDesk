@@ -47,6 +47,8 @@ model ImportBatch {
   error String?
   createdAt DateTime @default(now())
   completedAt DateTime?
+  requestedById String?
+  requestedByLabel String?
   rows ImportRow[]
   records LedgerRecord[]
   @@unique([kind, contentHash])
@@ -93,6 +95,7 @@ model ReconciliationRun {
   durationMs Int
   sourceCounts Json
   items ReconciliationItem[]
+  investigations Investigation[]
   @@unique([ruleVersion, snapshotHash])
 }
 model ReconciliationItem {
@@ -105,4 +108,78 @@ model ReconciliationItem {
   details Json
   @@unique([runId, transactionRef])
   @@index([runId, status])
+}
+
+enum UserRole {
+  VIEWER
+  OPERATOR
+}
+enum InvestigationStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  displayName String
+  role UserRole
+  passwordHash String
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  sessions Session[]
+  assignments Investigation[]
+  notes InvestigationNote[]
+  auditEvents AuditEvent[]
+}
+model Session {
+  tokenHash String @id
+  userId String
+  user User @relation(fields:[userId], references:[id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([expiresAt])
+}
+model LoginThrottle {
+  key String @id
+  count Int
+  resetsAt DateTime
+}
+model Investigation {
+  id String @id @default(uuid())
+  transactionRef String @unique
+  status InvestigationStatus @default(OPEN)
+  assigneeId String?
+  assignee User? @relation(fields:[assigneeId], references:[id])
+  version Int @default(1)
+  latestRunId String
+  latestRun ReconciliationRun @relation(fields:[latestRunId], references:[id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  notes InvestigationNote[]
+  @@index([status, updatedAt])
+}
+model InvestigationNote {
+  id String @id @default(uuid())
+  investigationId String
+  investigation Investigation @relation(fields:[investigationId], references:[id])
+  authorId String
+  author User @relation(fields:[authorId], references:[id])
+  kind String
+  body String
+  createdAt DateTime @default(now())
+  @@index([investigationId, createdAt])
+}
+model AuditEvent {
+  id String @id @default(uuid())
+  actorId String?
+  actor User? @relation(fields:[actorId], references:[id])
+  actorLabel String
+  action String
+  entityType String
+  entityId String
+  details Json
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+  @@index([entityId, createdAt])
 }

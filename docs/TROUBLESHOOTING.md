@@ -56,3 +56,26 @@ heartbeat expiry; use the real queue smoke test to verify execution.
 
 Run the individual PowerShell commands in README.md. They perform the same
 operations without requiring script execution to be enabled.
+
+## Login fails after Milestone 4
+
+Run the demo seed command from MILESTONE_4.md after migration. Existing passwords
+are not printed again; use the explicit reset command if you did not save them.
+Ten login attempts for one email within 15 minutes trigger a cooldown. Wait for
+the cooldown instead of repeatedly retrying. Use the generated operator account
+for the data verification script; a viewer correctly receives 403 for writes.
+
+## HTTP 401, 403 or 409
+
+401 means sign in again. 403 on a mutation means viewer access, missing/invalid
+CSRF, or an origin outside the configured localhost list. Use the application
+login form and the provided authenticated verifier. If you changed WEB_PORT,
+rebuild/restart Compose so AUTH_ORIGINS updates. 409 during an investigation
+edit means reload the case before saving; another edit changed its version.
+
+## PowerShell blocks Verify-Data.ps1
+
+Open scripts/Verify-Data.ps1 in Cursor and paste its commands into your existing
+PowerShell terminal. Run from C:\PROJECTS\ReconcileDesk and omit the Set-Location
+line referring to $PSScriptRoot, which only exists when running a script.
+Do not put the password directly into a command; retain the Get-Credential prompt.

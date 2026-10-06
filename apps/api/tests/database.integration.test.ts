@@ -12,8 +12,7 @@ describe.skipIf(!url)('database transaction integration',()=>{
   let store:ReturnType<typeof createStore>;
   beforeAll(()=>{db=createDatabase(url!,Number(process.env.TEST_DATABASE_POOL_SIZE??5));store=createStore(db);});
   beforeEach(async()=>{
-    await db.reconciliationItem.deleteMany();await db.reconciliationRun.deleteMany();
-    await db.ledgerRecord.deleteMany();await db.importRow.deleteMany();await db.importBatch.deleteMany();
+    await db.$executeRawUnsafe('TRUNCATE "AuditEvent", "InvestigationNote", "Investigation", "Session", "LoginThrottle", "User", "ReconciliationItem", "ReconciliationRun", "LedgerRecord", "ImportRow", "ImportBatch" CASCADE');
   });
   afterAll(async()=>{await db?.$disconnect();});
   it('rolls back record writes after an injected failure, then retries without duplication',async()=>{

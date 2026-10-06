@@ -8,7 +8,7 @@ import type {Store} from '../src/store.js';
 function setup() {
   const store={submit:vi.fn(),workspace:vi.fn(),batch:vi.fn(),retry:vi.fn(),run:vi.fn(),results:vi.fn()} as unknown as Store;
   const ok=async()=>true;
-  const app=createApp({database:ok,redis:ok,worker:ok,aiService:ok},pino({level:'silent'}),100,domainRoutes(store));
+  const app=createApp({database:ok,redis:ok,worker:ok,aiService:ok},pino({level:'silent'}),100,domainRoutes(store,{read:(_req,res,next)=>{res.locals.auth={user:{id:'operator',displayName:'Operator'}};next();},write:(_req,_res,next)=>next()}));
   return {store,app};
 }
 describe('import API contract',()=>{
@@ -23,7 +23,7 @@ describe('import API contract',()=>{
   it('returns an accepted job and strips path components from display filenames',async()=>{
     const {app,store}=setup();vi.mocked(store.submit).mockResolvedValue({id:'id',status:'QUEUED'} as never);
     const response=await request(app).post('/api/imports/PAYMENT').set('x-file-name','..%2Fpayments.csv').type('text/csv').send('csv');
-    expect(response.status).toBe(202);expect(store.submit).toHaveBeenCalledWith('PAYMENT','payments.csv','csv');
+    expect(response.status).toBe(202);expect(store.submit).toHaveBeenCalledWith('PAYMENT','payments.csv','csv',{id:'operator',label:'Operator'});
   });
   it('returns parser failures without a false success',async()=>{
     const {app,store}=setup();vi.mocked(store.submit).mockRejectedValue(new InputError('Missing columns'));

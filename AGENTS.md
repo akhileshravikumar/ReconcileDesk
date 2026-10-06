@@ -1,6 +1,7 @@
 # ReconcileDesk working agreement
 
-Current stage: milestone 3, CSV imports and deterministic reconciliation.
+Current stage: milestone 4, sessions, roles, investigations and audit.
+Read docs/MILESTONE_4.md for the approved access and workflow rules.
 Read docs/CSV_CONTRACT.md for the approved financial rules and representation.
 
 - Inspect the existing tree and relevant files before adding or changing files.
@@ -18,3 +19,7 @@ Read docs/CSV_CONTRACT.md for the approved financial rules and representation.
   and the Docker smoke test when the environment permits it.
 - Do not install additional frameworks or change pinned major versions
   without explaining the need first.
+
+- Require authenticated reads and operator permissions plus CSRF for business writes.
+- Keep investigation decisions separate from financial classification.
+- Audit state changes in the same transaction; never expose credential hashes.

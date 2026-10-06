@@ -1,10 +1,18 @@
 import assert from 'node:assert/strict';
 import { performance } from 'node:perf_hooks';
 import {demoFixtures,demoExpected} from './fixtures.js';
+// Credentials arrive over stdin, never command-line arguments or committed files.
+let input='';for await(const chunk of process.stdin){input+=chunk;if(input.length>16384)throw new Error('Credential input is too large.');}
+const supplied=JSON.parse(input) as {email?:string;password?:string;accounts?:{email:string;password:string|null;role:string}[]};
+const credentials=supplied.accounts?.find(a=>a.role==='OPERATOR'&&a.password)??supplied;
+if(!credentials.email||!credentials.password)throw new Error('Supply operator email/password JSON on stdin. See scripts/Verify-Data.ps1.');
+let cookie='';let csrfToken='';
 const base=process.env.SMOKE_API_URL??'http://api:4000';
 async function api(path:string,init?:RequestInit) {
-  const r=await fetch(base+path,{...init,signal:AbortSignal.timeout(150000)});
-  const body=await r.json();if(!r.ok)throw new Error(`${r.status}: ${JSON.stringify(body)}`);return body;
+  const r=await fetch(base+path,{...init,headers:{...Object.fromEntries(new Headers(init?.headers)),cookie,'x-csrf-token':csrfToken,'x-reconciledesk-client':'web'},signal:AbortSignal.timeout(150000)});
+  const text=await r.text();
+  if(!r.ok)throw new Error(`${r.status}: ${text}`);
+  return text?JSON.parse(text):null;
 }
 async function upload(kind:string,source:string,name:string) {
   const batch=await api(`/api/imports/${kind}`,{method:'POST',headers:{'Content-Type':'text/csv','x-file-name':name},body:source});
@@ -16,6 +24,11 @@ async function upload(kind:string,source:string,name:string) {
   }
   throw new Error('Import did not finish within 90 seconds. Inspect the worker logs.');
 }
+const login=await fetch(base+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json','x-reconciledesk-client':'web'},body:JSON.stringify({email:credentials.email,password:credentials.password}),signal:AbortSignal.timeout(15000)});
+if(!login.ok)throw new Error(`Login failed (${login.status}). Check your operator credentials.`);
+cookie=login.headers.get('set-cookie')?.split(';')[0]??'';
+csrfToken=(await login.json()).csrfToken;
+try {
 const fixtures=demoFixtures();
 const started=performance.now();
 for(const kind of ['PAYMENT','SETTLEMENT','REFUND'] as const) {
@@ -45,4 +58,5 @@ assert.equal(after.run.matchedCount,3);assert.equal(after.run.exceptionCount,8);
 assert.deepEqual(after.items.find((x:{transactionRef:string})=>x.transactionRef==='DEMO-P009').codes,[]);
 console.log('PASS late settlement resolves the missing-counterpart classification');
 console.log(JSON.stringify({scope:'Live demo verification; may reuse existing fixtures on reruns',wallTimeMs:Math.round(performance.now()-started),counts:(await api('/api/workspace')).counts}));
-console.log('Milestone 3 data verification passed.');
+console.log('Authenticated data verification passed.');
+} finally {await api('/api/auth/logout',{method:'POST'});}

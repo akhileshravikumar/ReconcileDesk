@@ -1,4 +1,4 @@
-# Architecture — Milestone 3
+# Architecture — Milestone 4
 
 React is served by Nginx, which proxies same-origin /api requests to Express.
 PostgreSQL is the source of truth. The API stores a validated CSV batch as a
@@ -36,14 +36,14 @@ financial job completed; smoke and verify:data exercise actual processing.
 The AI service remains a foundation and performs no model calls.
 
 Only localhost application ports are published. Database and Redis ports stay
-inside Compose. No authentication exists yet. The synchronous reconciliation
+inside Compose. Business routes require a live session; mutations additionally require an operator
+and a valid CSRF token. Health routes remain public. The synchronous reconciliation
 engine loads the accepted dataset in memory; this is a bounded local portfolio
 implementation, not a demonstrated large-scale payment platform.
 
 Uploads are capped at 5 MiB and 25,000 records. HTTP request bodies are not logged.
 Queue messages contain batch IDs, not CSV contents. Historical raw inputs and
-row reports are retained for the synthetic demonstration. Retention controls,
-authentication, operator audit events and hosting decisions are later work.
+row reports are retained for the synthetic demonstration. Retention controls and hosting decisions are later work.
 
 ## Validation boundaries
 
@@ -55,3 +55,26 @@ use controlled responses and therefore do not substitute for live verification.
 JavaScript dependencies and Python requirements are pinned. Only csv-parse was
 added for this milestone. Docker image tags remain major-series tags, not
 immutable digests, so rebuilds still require verification.
+
+## Sessions and workflow
+
+Passwords use salted scrypt. Random session tokens are sent only in HttpOnly,
+SameSite=Lax cookies; PostgreSQL stores their SHA-256 hashes. Sessions expire
+after eight hours and logout revokes them. Browser JavaScript keeps a separate
+CSRF token in memory. Production mode enables Secure cookies; current Compose
+is a localhost development configuration. Login attempts are throttled in the
+database. The current reverse proxy shares an IP throttle bucket; review trusted
+proxy configuration before public hosting.
+
+One investigation is keyed to each exception transaction reference. Migration
+backfills the latest pre-existing snapshot. A new reconciliation refreshes the
+latest financial finding but preserves assignee, notes and workflow status.
+Cases whose financial findings become matched remain visible for human review.
+Creating cases uses bounded database batches. Changes use an expected version;
+a stale edit returns 409 and writes neither notes nor audit events.
+
+Every successful workflow mutation writes its audit event in the same database
+transaction. Audit rows contain actor, timestamp, entity and changes. Notes are
+append-only through the API; audit UPDATE/DELETE are additionally rejected by a
+database trigger. The local database owner can still change schema or truncate
+tables; this is not a cryptographic or privileged-administrator tamper-proof log.

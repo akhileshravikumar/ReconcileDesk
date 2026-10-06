@@ -1,5 +1,7 @@
 import type { PrismaClient, Prisma } from './generated/prisma/client.js';
 import { InputError, digest, parseCsv, planImport, reconcile, ruleVersion, type Kind } from './domain.js';
+import { audit, systemActor, type Actor } from './audit.js';
+import { syncInvestigations } from './investigations.js';
 import { performance } from 'node:perf_hooks';
 
 const batchFields={id:true,kind:true,fileName:true,status:true,total:true,accepted:true,duplicate:true,rejected:true,quarantined:true,attempts:true,error:true,createdAt:true,completedAt:true} as const;
@@ -12,11 +14,17 @@ export const txOptions={maxWait:120000,timeout:120000};
 function chunks<T>(items:T[], size=500) { return Array.from({length:Math.ceil(items.length/size)},(_,i)=>items.slice(i*size,(i+1)*size)); }
 export function createStore(db:PrismaClient) {
   return {
-    async submit(kind:Kind,fileName:string,csv:string) {
+    async submit(kind:Kind,fileName:string,csv:string,actor:Actor=systemActor) {
       const rows=parseCsv(kind,csv);
       const contentHash=digest(`csv-v1\n${csv.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n')}`);
       // The durable batch is the outbox. A worker dispatcher publishes queued batches to Redis.
-      return db.importBatch.upsert({where:{kind_contentHash:{kind,contentHash}},update:{},create:{kind,fileName,rawCsv:csv,contentHash,total:rows.length},select:batchFields});
+      return db.$transaction(async tx=>{
+        await lock(tx);
+        const prior=await tx.importBatch.findUnique({where:{kind_contentHash:{kind,contentHash}},select:batchFields});
+        if(prior)return prior;
+        const batch=await tx.importBatch.create({data:{kind,fileName,rawCsv:csv,contentHash,total:rows.length,requestedById:actor.id,requestedByLabel:actor.label},select:batchFields});
+        await audit(tx,actor,'IMPORT_SUBMITTED','IMPORT',batch.id,{kind,fileName,total:rows.length});return batch;
+      },txOptions);
     },
     async process(id:string, injectAfterWrites=false) {
       const batch=await db.importBatch.findUniqueOrThrow({where:{id}});
@@ -36,16 +44,24 @@ export function createStore(db:PrismaClient) {
         const count=(outcome:string)=>plan.dispositions.filter(r=>r.outcome===outcome).length;
         await tx.importBatch.update({where:{id},data:{status:'COMPLETED',completedAt:new Date(),error:null,
           accepted:count('ACCEPTED'),duplicate:count('DUPLICATE'),rejected:count('REJECTED'),quarantined:count('QUARANTINED')}});
+        await audit(tx,systemActor,'IMPORT_COMPLETED','IMPORT',id,{requestedById:batch.requestedById,accepted:count('ACCEPTED'),duplicate:count('DUPLICATE'),rejected:count('REJECTED'),quarantined:count('QUARANTINED')});
       },txOptions);
     },
     async failed(id:string,terminal:boolean) {
-      await db.importBatch.updateMany({where:{id,status:{not:'COMPLETED'}},data:{status:terminal?'FAILED':'QUEUED',error:terminal?'Processing failed after bounded retries. Inspect worker logs, then retry.':'Processing interrupted; retry pending.'}});
+      await db.$transaction(async tx=>{
+        const updated=await tx.importBatch.updateMany({where:{id,status:{notIn:['COMPLETED','FAILED']}},data:{status:terminal?'FAILED':'QUEUED',error:terminal?'Processing failed after bounded retries. Inspect worker logs, then retry.':'Processing interrupted; retry pending.'}});
+        if(updated.count&&terminal)await audit(tx,systemActor,'IMPORT_FAILED','IMPORT',id);
+      });
     },
-    async retry(id:string) {
+    async retry(id:string,actor:Actor=systemActor) {
       const batch=await db.importBatch.findUnique({where:{id}});
       if(!batch) throw new InputError('Import not found.',404);
       if(batch.status!=='FAILED') throw new InputError('Only a failed import can be retried.',409);
-      return db.importBatch.update({where:{id},data:{status:'QUEUED',error:null},select:batchFields});
+      return db.$transaction(async tx=>{
+        const changed=await tx.importBatch.updateMany({where:{id,status:'FAILED'},data:{status:'QUEUED',error:null}});
+        if(!changed.count)throw new InputError('Import state changed. Refresh and retry.',409);
+        await audit(tx,actor,'IMPORT_RETRIED','IMPORT',id);return tx.importBatch.findUniqueOrThrow({where:{id},select:batchFields});
+      });
     },
     async workspace() {
       const [batches,counts,pending,rejected,quarantined,latest]=await Promise.all([
@@ -64,7 +80,7 @@ export function createStore(db:PrismaClient) {
       const [rows,total]=await Promise.all([db.importRow.findMany({where,orderBy:{rowNumber:'asc'},skip:(page-1)*50,take:50}),db.importRow.count({where})]);
       return {batch,rows,total,page,pageSize:50};
     },
-    async run() {
+    async run(actor:Actor=systemActor) {
       return db.$transaction(async tx=> {
         await lock(tx);
         if(await tx.importBatch.count({where:{status:{in:['QUEUED','PROCESSING']}}})) throw new InputError('Wait for queued imports to finish before reconciling.',409);
@@ -82,6 +98,8 @@ export function createStore(db:PrismaClient) {
           matchedCount:items.filter(i=>i.status==='MATCHED').length,exceptionCount:items.filter(i=>i.status==='EXCEPTION').length,
           groupCount:items.length,durationMs:0,sourceCounts}});
         for(const part of chunks(items)) await tx.reconciliationItem.createMany({data:part.map(item=>({...item,runId:run.id}))});
+        await syncInvestigations(tx,run.id,items,actor);
+        await audit(tx,actor,'RECONCILIATION_CREATED','RECONCILIATION',run.id,{paymentCount:run.paymentCount,matchedCount:run.matchedCount,exceptionCount:run.exceptionCount});
         const saved=await tx.reconciliationRun.update({where:{id:run.id},data:{durationMs:Math.round(performance.now()-start)}});
         return {run:saved,reused:false};
       },txOptions);

@@ -23,7 +23,7 @@ export function createApp(probes: Probes, logger: Logger, timeoutMs = 1500, rout
   app.use(helmet());
   app.use(pinoHttp({ logger }));
   app.get('/api/health', (_req, res) => {
-    res.json({ status: 'ok', service: 'api', milestone: 3 });
+    res.json({ status: 'ok', service: 'api', milestone: 4 });
   });
   app.get('/api/ready', async (_req, res) => {
     const entries = await Promise.all(Object.entries(probes).map(async ([name, check]) => {
@@ -33,7 +33,7 @@ export function createApp(probes: Probes, logger: Logger, timeoutMs = 1500, rout
     const dependencies = Object.fromEntries(entries);
     const ready = Object.values(dependencies).every(value => value === 'ok');
     res.status(ready ? 200 : 503).json({
-      status: ready ? 'ready' : 'degraded', service: 'api', milestone: 3, dependencies
+      status: ready ? 'ready' : 'degraded', service: 'api', milestone: 4, dependencies
     });
   });
   if (routes) app.use('/api', routes);

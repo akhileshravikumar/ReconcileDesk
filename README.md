@@ -1,20 +1,8 @@
 # ReconcileDesk
 
 Payment reconciliation and exception-management portfolio project.
-This release is **milestone 2: the local service foundation**. It does not yet
-import financial records, authenticate users, reconcile payments, or call OpenAI.
-No sample performance numbers are represented as measured results.
 
 ## Start here on Windows
-
-Your existing repository at `C:\PROJECTS\ReconcileDesk` is preserved. The ZIP
-contains no `.git` directory. Extract its contents into that folder, not into a
-nested `reconciledesk-milestone-2` folder. Follow the guarded extraction commands
-provided with the download before running these steps.
-
-Open the folder in Cursor. Use **Terminal > New Terminal > PowerShell**.
-Start Docker Desktop in Linux-container mode. Each command below is separate:
-stop at the first failure and share its output.
 
 ```powershell
 Set-Location -LiteralPath 'C:\PROJECTS\ReconcileDesk'
@@ -74,8 +62,6 @@ Send the smoke output, test summaries, and any errors back before milestone 3.
 
 ## Record the verified foundation in Git
 
-Do not run `git init`: a repository already exists. Do not overwrite its branch
-or history. After checks pass, inspect and commit the new files:
 
 ```powershell
 git status --short --branch
@@ -86,17 +72,6 @@ git diff --cached --name-only
 git commit -m "chore: add ReconcileDesk service foundation"
 ```
 
-Confirm `.env`, `node_modules`, and generated Prisma code do not appear in the
-staged file list. If Git requests an identity, configure your real name and
-preferred Git email **for this repository**, then retry the commit:
-
-```powershell
-git config user.name "YOUR NAME"
-git config user.email "YOUR GIT EMAIL"
-```
-
-No GitHub remote is created or pushed by the package. We will handle that once
-you choose the remote and repository visibility.
 
 ## File map
 
@@ -136,9 +111,6 @@ For changes to API, worker, Python, Docker configuration, or the packaged UI:
 docker compose up --build --detach --wait --wait-timeout 180
 ```
 
-The Node image intentionally retains development dependencies in this foundation
-release so checks can run locally. Later deployment work will choose the host,
-runtime image, authentication, secrets, and operational limits explicitly.
 
 ## Stop and inspect
 
@@ -152,12 +124,6 @@ error without first checking the cause. See `docs/TROUBLESHOOTING.md`.
 
 ## Cursor task example
 
-Use this as your first bounded request after verification:
-
 > Read AGENTS.md, docs/MILESTONES.md, and the existing source tree. Explain how
 > the readiness endpoint and queue smoke test work. Do not edit files. Identify
 > the product decisions we need before adding the milestone 3 financial schema.
-
-The `.ps1` scripts are optional wrappers for the documented commands. You can
-use the inline commands if your PowerShell policy does not allow local scripts;
-no execution-policy change is required.

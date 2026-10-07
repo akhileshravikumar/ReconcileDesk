@@ -1,5 +1,7 @@
 # Milestone 5: private AI summaries with a $1 total budget
 
+For the first live-review correction, start with MILESTONE_5_FIX.md.
+
 Approved scope: one investigation at a time; GPT-4.1 mini; operators generate,
 viewers read saved output; AI cannot change financial or investigation state.
 The application remains private on localhost. You have $5 credit and do not need
@@ -54,8 +56,8 @@ docker compose exec -T ai python -m pytest -q -p no:cacheprovider
 npm.cmd run test:e2e
 ```
 
-Expected results: 51 unit/API tests; 36 isolated database tests; 15 Python tests;
-13 offline contract evaluation cases; 11 browser tests. Database tests skip in
+Expected results: 61 unit/API tests; 38 isolated database tests; 16 Python tests;
+16 offline contract evaluation cases; 11 browser tests. Database tests skip in
 `npm run check` and run in `verify:db`. Python tests block network connections and
 clear live configuration inside their test process. API tests use injected fake
 providers. Browser tests mock API responses. None of these commands generates a

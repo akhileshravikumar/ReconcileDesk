@@ -82,3 +82,20 @@ using the app after a long gap. The account dashboard is the billing authority.
 - https://developers.openai.com/api/docs/guides/structured-outputs
 - https://developers.openai.com/api/reference/python/resources/responses/methods/create
 - https://developers.openai.com/api/docs/guides/spend-limits
+
+## First live-review correction (case-summary-v2)
+
+The first three reviewed live outputs cost an estimated $0.002. One attributed
+an unsupported statement to an empty limitations list and converted units; another
+mixed payment-versus-gross matching with a payment-versus-net gap. The v2 prompt
+clarifies these rules. The API additionally checks numeric paise mentions against
+cited authoritative fields, rejects common INR/rupee conversions, requires wording
+mentioning limitations to equal a supplied limitation, and rejects net wording
+for an amount mismatch without a separate settlement-arithmetic exception.
+
+The numeric scanner is a targeted textual guard, not a language parser. It can
+reject benign alternative phrasing and does not prove semantic truth, detect every
+spelled-out number or verify all causal claims. Human review is still required.
+The rule-version change invalidates reuse of old summaries without rewriting them.
+Existing usage and reservations are retained. Regression replay of old output is
+free and must not be reported as a new model-quality result.

@@ -91,3 +91,11 @@ def test_disabled_route_never_calls_provider(monkeypatch):
 def test_oversized_http_request_is_rejected(monkeypatch):
     headers = enable(monkeypatch)
     assert client.post("/summaries", headers=headers, content="x" * 16001).status_code == 413
+
+
+def test_prompt_distinguishes_gross_matching_and_forbids_invented_limitations():
+    instruction = make_payload(CONTEXT)["instructions"]
+    assert "GROSS, never NET" in instruction
+    assert "Never convert to INR/rupees" in instruction
+    assert "When limitations is empty" in instruction
+    assert "Do not calculate or mention a derived difference" in instruction

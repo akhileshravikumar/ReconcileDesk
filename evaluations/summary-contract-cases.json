@@ -1,6 +1,6 @@
 {
-  "datasetVersion": "summary-contract-v1",
-  "scope": "Hand-authored contract fixtures, not model-generated responses or model-quality measurements.",
+  "datasetVersion": "summary-contract-v2",
+  "scope": "Offline validator fixtures plus preserved v1 live-output regressions; no new model calls or quality measurement.",
   "cases": [
     {
       "id": "missing_settlement",
@@ -618,6 +618,331 @@
       },
       "expectedValid": true,
       "humanReviewExpectation": "Manual resolution must not be described as corrected financial data."
+    },
+    {
+      "id": "live-v1-demo-p006",
+      "context": {
+        "runId": "regression-baseline-run",
+        "status": "OPEN",
+        "evidence": [
+          {
+            "id": "finding",
+            "data": {
+              "codes": [
+                "REFUND_EXCEEDS_PAYMENT"
+              ],
+              "status": "EXCEPTION",
+              "details": {
+                "netPaise": "58800",
+                "grossPaise": "60000",
+                "refundRefs": [
+                  "DEMO-R006A",
+                  "DEMO-R006B"
+                ],
+                "refundPaise": "65000",
+                "paymentPaise": "60000",
+                "settlementRefs": [
+                  "DEMO-S006"
+                ]
+              }
+            },
+            "kind": "DETERMINISTIC_FINDING"
+          },
+          {
+            "id": "PAYMENT/DEMO-P006",
+            "data": {
+              "kind": "PAYMENT",
+              "currency": "INR",
+              "feePaise": "0",
+              "netPaise": "0",
+              "reference": "DEMO-P006",
+              "occurredAt": "2026-10-01T10:00:00.000Z",
+              "amountPaise": "60000",
+              "transactionRef": "DEMO-P006"
+            },
+            "kind": "ACCEPTED_RECORD"
+          },
+          {
+            "id": "SETTLEMENT/DEMO-S006",
+            "data": {
+              "kind": "SETTLEMENT",
+              "currency": "INR",
+              "feePaise": "1200",
+              "netPaise": "58800",
+              "reference": "DEMO-S006",
+              "occurredAt": "2026-10-01T10:00:00.000Z",
+              "amountPaise": "60000",
+              "transactionRef": "DEMO-P006"
+            },
+            "kind": "ACCEPTED_RECORD"
+          },
+          {
+            "id": "REFUND/DEMO-R006A",
+            "data": {
+              "kind": "REFUND",
+              "currency": "INR",
+              "feePaise": "0",
+              "netPaise": "0",
+              "reference": "DEMO-R006A",
+              "occurredAt": "2026-10-01T10:00:00.000Z",
+              "amountPaise": "35000",
+              "transactionRef": "DEMO-P006"
+            },
+            "kind": "ACCEPTED_RECORD"
+          },
+          {
+            "id": "REFUND/DEMO-R006B",
+            "data": {
+              "kind": "REFUND",
+              "currency": "INR",
+              "feePaise": "0",
+              "netPaise": "0",
+              "reference": "DEMO-R006B",
+              "occurredAt": "2026-10-01T10:00:00.000Z",
+              "amountPaise": "30000",
+              "transactionRef": "DEMO-P006"
+            },
+            "kind": "ACCEPTED_RECORD"
+          }
+        ],
+        "caseVersion": 1,
+        "limitations": [],
+        "transactionRef": "DEMO-P006"
+      },
+      "candidate": {
+        "findings": [
+          {
+            "text": "The total refund amount of 65000 paise exceeds the total payment amount of 60000 paise for transaction DEMO-P006, indicating an over-refund condition.",
+            "evidenceIds": [
+              "finding",
+              "PAYMENT/DEMO-P006",
+              "REFUND/DEMO-R006A",
+              "REFUND/DEMO-R006B"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "No information on customer approval or communication regarding refund amounts.",
+          "No additional transaction history beyond the supplied payment, settlement, and refund records."
+        ],
+        "suggestedChecks": [
+          {
+            "text": "Verify the refund authorization and documentation to understand why refunds total more than the original payment.",
+            "evidenceIds": [
+              "finding",
+              "REFUND/DEMO-R006A",
+              "REFUND/DEMO-R006B"
+            ]
+          },
+          {
+            "text": "Check for possible data entry errors or duplicated refund records related to DEMO-P006.",
+            "evidenceIds": [
+              "finding",
+              "REFUND/DEMO-R006A",
+              "REFUND/DEMO-R006B"
+            ]
+          }
+        ]
+      },
+      "expectedValid": true,
+      "humanReviewExpectation": "Preserved v1 output: validate with v2 rules. This is regression replay, not a new model-quality result."
+    },
+    {
+      "id": "live-v1-demo-p003",
+      "context": {
+        "runId": "regression-baseline-run",
+        "status": "OPEN",
+        "evidence": [
+          {
+            "id": "finding",
+            "data": {
+              "codes": [
+                "AMOUNT_MISMATCH"
+              ],
+              "status": "EXCEPTION",
+              "details": {
+                "netPaise": "28420",
+                "grossPaise": "29000",
+                "refundRefs": [],
+                "refundPaise": "0",
+                "paymentPaise": "30000",
+                "settlementRefs": [
+                  "DEMO-S003"
+                ]
+              }
+            },
+            "kind": "DETERMINISTIC_FINDING"
+          },
+          {
+            "id": "PAYMENT/DEMO-P003",
+            "data": {
+              "kind": "PAYMENT",
+              "currency": "INR",
+              "feePaise": "0",
+              "netPaise": "0",
+              "reference": "DEMO-P003",
+              "occurredAt": "2026-10-01T10:00:00.000Z",
+              "amountPaise": "30000",
+              "transactionRef": "DEMO-P003"
+            },
+            "kind": "ACCEPTED_RECORD"
+          },
+          {
+            "id": "SETTLEMENT/DEMO-S003",
+            "data": {
+              "kind": "SETTLEMENT",
+              "currency": "INR",
+              "feePaise": "580",
+              "netPaise": "28420",
+              "reference": "DEMO-S003",
+              "occurredAt": "2026-10-01T10:00:00.000Z",
+              "amountPaise": "29000",
+              "transactionRef": "DEMO-P003"
+            },
+            "kind": "ACCEPTED_RECORD"
+          }
+        ],
+        "caseVersion": 1,
+        "limitations": [],
+        "transactionRef": "DEMO-P003"
+      },
+      "candidate": {
+        "findings": [
+          {
+            "text": "The payment of 30000 paise does not match the settlement amount of 29000 paise, causing an amount mismatch exception.",
+            "evidenceIds": [
+              "finding",
+              "PAYMENT/DEMO-P003",
+              "SETTLEMENT/DEMO-S003"
+            ]
+          },
+          {
+            "text": "The settlement fee of 580 paise causes the net settlement to be 28420 paise, which still differs from the payment amount of 30000 paise.",
+            "evidenceIds": [
+              "finding",
+              "SETTLEMENT/DEMO-S003"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "No information about other possible transactions or internal adjustments related to this payment is available.",
+          "There is no indication whether partial payments or manual adjustments exist outside these records."
+        ],
+        "suggestedChecks": [
+          {
+            "text": "Verify if there are any additional settlements or refunds related to this payment that might account for the 1580 paise difference.",
+            "evidenceIds": [
+              "finding",
+              "PAYMENT/DEMO-P003",
+              "SETTLEMENT/DEMO-S003"
+            ]
+          },
+          {
+            "text": "Check accounting records or communication to confirm if the settlement fee of 580 paise has been correctly applied and approved.",
+            "evidenceIds": [
+              "SETTLEMENT/DEMO-S003"
+            ]
+          }
+        ]
+      },
+      "expectedValid": false,
+      "humanReviewExpectation": "Preserved v1 output: validate with v2 rules. This is regression replay, not a new model-quality result."
+    },
+    {
+      "id": "live-v1-demo-p002",
+      "context": {
+        "runId": "regression-baseline-run",
+        "status": "RESOLVED",
+        "evidence": [
+          {
+            "id": "finding",
+            "data": {
+              "codes": [
+                "MISSING_SETTLEMENT"
+              ],
+              "status": "EXCEPTION",
+              "details": {
+                "netPaise": "0",
+                "grossPaise": "0",
+                "refundRefs": [],
+                "refundPaise": "0",
+                "paymentPaise": "20000",
+                "settlementRefs": []
+              }
+            },
+            "kind": "DETERMINISTIC_FINDING"
+          },
+          {
+            "id": "PAYMENT/DEMO-P002",
+            "data": {
+              "kind": "PAYMENT",
+              "currency": "INR",
+              "feePaise": "0",
+              "netPaise": "0",
+              "reference": "DEMO-P002",
+              "occurredAt": "2026-10-01T10:00:00.000Z",
+              "amountPaise": "20000",
+              "transactionRef": "DEMO-P002"
+            },
+            "kind": "ACCEPTED_RECORD"
+          },
+          {
+            "id": "note/66552d74-3625-4473-ba76-4d2930251264",
+            "data": {
+              "body": "test investigation op 2",
+              "kind": "COMMENT",
+              "createdAt": "2026-10-06T14:38:19.871Z"
+            },
+            "kind": "OPERATOR_NOTE_UNVERIFIED"
+          },
+          {
+            "id": "note/9160aa7c-ce51-4fd7-ab95-894b496cea25",
+            "data": {
+              "body": "resolution note",
+              "kind": "RESOLUTION",
+              "createdAt": "2026-10-06T14:39:28.179Z"
+            },
+            "kind": "OPERATOR_NOTE_UNVERIFIED"
+          }
+        ],
+        "caseVersion": 5,
+        "limitations": [],
+        "transactionRef": "DEMO-P002"
+      },
+      "candidate": {
+        "findings": [
+          {
+            "text": "A payment of 200.00 INR was recorded for transaction DEMO-P002 but no corresponding settlement record was found, leading to a MISSING_SETTLEMENT exception.",
+            "evidenceIds": [
+              "finding",
+              "PAYMENT/DEMO-P002"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "No settlement evidence or documentation is present in the supplied data to confirm if the issue was fully resolved.",
+          "Operator notes are unverified and do not provide detailed explanation of financial corrections, if any.",
+          "Limitations specify no additional evidence was provided relating to settlements or refunds."
+        ],
+        "suggestedChecks": [
+          {
+            "text": "Verify if the settlement for the 200.00 INR payment under transaction DEMO-P002 has been processed and properly recorded in the system.",
+            "evidenceIds": [
+              "finding",
+              "PAYMENT/DEMO-P002"
+            ]
+          },
+          {
+            "text": "Review operator notes for any commentary on the resolution or investigation progress related to this missing settlement.",
+            "evidenceIds": [
+              "note/66552d74-3625-4473-ba76-4d2930251264",
+              "note/9160aa7c-ce51-4fd7-ab95-894b496cea25"
+            ]
+          }
+        ]
+      },
+      "expectedValid": false,
+      "humanReviewExpectation": "Preserved v1 output: validate with v2 rules. This is regression replay, not a new model-quality result."
     }
   ]
 }

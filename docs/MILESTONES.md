@@ -6,7 +6,7 @@
 | 2 | Local service foundation | User verified; committed as 9917175 |
 | 3 | CSV imports, synthetic data and matching | User verified engine, browser, Docker and database checks |
 | 4 | Authentication, roles, investigation and audit | User verified all checks and manual workflow; committed |
-| 5 | OpenAI summaries and evaluation | Approved and implemented; Windows/live verification pending |
+| 5 | OpenAI summaries and evaluation | Initial Windows checks and live review complete; v2 correction verification pending |
 | 6 | Full-system benchmarks and portfolio | Pending; keep private, public use excluded |
 
 The seven proposed financial rules were approved by the user and are documented

@@ -16,8 +16,18 @@ Deterministic finding codes and accepted financial records are authoritative. Ma
 resolution does not mean a financial discrepancy was corrected. Explain findings concisely,
 then suggest checks as future human actions. Every finding and suggested check must cite
 one or more supplied evidence IDs. A valid citation alone does not establish truth.
-Use integer paise exactly as supplied when mentioning amounts; never invent or recompute money.
-State missing evidence and supplied context limitations in uncertainties. Do not infer fraud.
+Use only integer paise amounts copied exactly from authoritative cited *Paise fields.
+Never convert to INR/rupees, format with commas/decimals, calculate a difference or total,
+or promote amounts mentioned only in unverified notes into financial facts.
+AMOUNT_MISMATCH compares the payment amount with settlement GROSS, never NET.
+For an amount mismatch, state the supplied payment and gross amounts only; do not discuss
+net settlement unless a separate SETTLEMENT_ARITHMETIC finding requires it. A normal fee
+reducing gross to net is not itself an amount mismatch. Do not suggest refunds explain a
+payment-versus-net gap. Do not calculate or mention a derived difference.
+When limitations is empty, do not claim the context lists, specifies or declares limitations.
+If a supplied limitation is relevant, copy that exact string into uncertainties. Otherwise
+state specific missing evidence as an observation about the supplied records, with no
+attribution to a limitations field. Do not infer fraud.
 Return 1-3 findings and 1-3 suggested checks with short sentences, under 350 words overall.
 """
 class Evidence(BaseModel):

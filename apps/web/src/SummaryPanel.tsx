@@ -40,7 +40,7 @@ export function SummaryPanel({investigationId,user,version,snapshotId}:{investig
  {!view.summaries.length&&<p>No AI summary has been generated for this investigation.</p>}
  {view.summaries.length>1&&<label>Summary history (latest 10)<select aria-label="Summary history" value={selected?.id??''} onChange={e=>{setSelectedId(e.target.value);setSource(null);}}>{view.summaries.map(s=><option key={s.id} value={s.id}>{new Date(s.createdAt).toLocaleString()} · {s.status}</option>)}</select></label>}
  {selected&&<article className="ai-result"><p><strong>{selected.status}</strong> · {selected.model} · {new Date(selected.createdAt).toLocaleString()}</p>
- {selected.stale&&<p className="feedback">Source evidence has changed. This saved summary may be outdated.</p>}
+ {selected.stale&&<p className="feedback">Source evidence or summary rules have changed. This saved summary may be outdated.</p>}
  {(selected.status==='UNKNOWN'||selected.interrupted)&&<p className="feedback">Usage is uncertain or the request was interrupted. Its full reservation remains counted against the budget.</p>}
  {selected.error&&<p>{selected.error}</p>}
  {selected.output&&<><h4>Findings</h4><ul>{selected.output.findings.map((c,i)=><li key={i}>{c.text} {citations(c)}</li>)}</ul><h4>Suggested checks</h4><ul>{selected.output.suggestedChecks.map((c,i)=><li key={i}>{c.text} {citations(c)}</li>)}</ul><h4>Uncertainties</h4><ul>{selected.output.uncertainties.map((s,i)=><li key={i}>{s}</li>)}</ul><p className="muted">Citations identify supplied evidence; they do not guarantee every claim is correct. AI cannot change financial records or resolve investigations.</p></>}

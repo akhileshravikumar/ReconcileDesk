@@ -62,7 +62,7 @@ export function createSummaries(db:PrismaClient,provider:SummaryProvider,enabled
    reply=providerReplySchema.parse(await provider(reserved.request.context as unknown as SummaryContext,reserved.request.id));
    status='REJECTED';error=reply.error==='REFUSED'?'The model declined this request.':reply.error==='INCOMPLETE'?'The model response was incomplete.':'The model response failed validation.';
    if(reply.status==='COMPLETED'){output=validateSummary(reply.summary,reserved.request.context as unknown as SummaryContext) as unknown as Prisma.InputJsonValue;status='SUCCEEDED';error=null;}
-  }catch{if(reply){status='REJECTED';error='The model response failed schema or evidence-reference validation.';}}
+  }catch{if(reply){status='REJECTED';error='The model response failed schema, evidence or financial-wording validation.';}}
   const request=await db.$transaction(async tx=>{
    await tx.$executeRaw`SELECT pg_advisory_xact_lock(7319383)`;
    const charge=reply?costMicros(reply.usage.inputTokens,reply.usage.outputTokens):0;

@@ -10,6 +10,7 @@ import {createSummaries} from '../src/summaries.js';
 import {createAuth,hashPassword} from '../src/auth.js';
 import {createApp} from '../src/app.js';
 import {domainRoutes} from '../src/routes.js';
+import {digest} from '../src/domain.js';
 import {demoFixtures} from '../src/fixtures.js';
 import {reservationMicros,costMicros,type ProviderReply} from '../src/summary-contract.js';
 const url=process.env.TEST_DATABASE_URL;
@@ -98,4 +99,16 @@ describe.skipIf(!url)('AI budgets and summaries with simulated provider only',()
   expect((await viewer.get(path)).status).toBe(200);expect((await viewer.post(path).set('x-csrf-token',login.body.csrfToken).send(input())).status).toBe(403);
   const op=request.agent(app);await op.post('/api/auth/login').set('x-reconciledesk-client','web').send({email:'op@test.local',password:'test-password'});expect((await op.post(path).send(input())).status).toBe(403);expect(provider).not.toHaveBeenCalled();
  });
+ it('rejects a supplied-reference monetary hallucination while retaining actual usage cost',async()=>{
+  provider.mockResolvedValue({...good,summary:{findings:[{text:'Payment is 99999 paise.',evidenceIds:['finding']}],suggestedChecks:[{text:'Check source records.',evidenceIds:['finding']}],uncertainties:[]}});
+  const result=await service.generate(caseId,input(),actor);expect(result.request.status).toBe('REJECTED');expect(result.request.output).toBeNull();expect((await service.budget()).spentMicros).toBe(costMicros(1000,200));
+ });
+ it('preserves v1 output while marking it outdated and generating under v2 only on request',async()=>{
+  const first=await service.generate(caseId,input(),actor);
+  const oldHash=digest(JSON.stringify({model:'gpt-4.1-mini',promptVersion:'case-summary-v1',context:first.request.context}));
+  await db.aiRequest.update({where:{id:first.request.id},data:{promptVersion:'case-summary-v1',sourceHash:oldHash}});
+  expect((await service.view(caseId)).summaries[0]?.stale).toBe(true);expect(provider).toHaveBeenCalledTimes(1);
+  const second=await service.generate(caseId,input(),actor);expect(second.request.promptVersion).toBe('case-summary-v2');expect(second.reused).toBe(false);expect(await db.aiRequest.count()).toBe(2);
+ });
+
 });

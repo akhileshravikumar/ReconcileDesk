@@ -1,46 +1,29 @@
-# Milestone 5 package validation
+# Milestone 5 correction validation
 
-## Completed here, with no paid OpenAI requests
+## Verified by the user before this correction
 
-- Prisma generation, ESLint, TypeScript checks and API/frontend builds passed.
-- 51 unit/API tests passed. The default test command skips 36 database tests.
-- All 36 database integration tests passed against embedded PostgreSQL (PGlite)
-  through a PostgreSQL socket with a single-connection test pool. The 15 new
-  summary tests were rerun after adding consistent investigation-row locking.
-- All four migrations executed successfully in that embedded database.
-- 15 Python tests passed under Python 3.12 using the project's pinned packages.
-  The existing Starlette/httpx deprecation warning remains visible.
-- 13 hand-authored offline contract evaluation cases passed. These test output
-  validation, not live model accuracy or prompt-injection resistance.
-- The private configuration helper preserved unrelated .env settings and disabled
-  AI correctly in a separate synthetic test directory, without network calls.
-- The manual-review report calculator passed a synthetic-export smoke check.
-- Playwright discovered all 11 browser tests; discovery is not execution.
-- The Git patch was checked and applied to a clean Milestone 4 baseline, and
-  resulting source files were compared with the prepared source.
+51 unit/API tests, 36 actual PostgreSQL integration tests, 15 Python tests,
+11 browser tests, 13 offline validator cases and authenticated data verification
+passed on Windows/Docker. Three live requests succeeded with $0.002 total recorded
+estimated usage. Review identified unit-conversion, gross/net interpretation and
+unsupported limitation-attribution errors; this was not a perfect model-quality run.
 
-The database cases cover disabled mode, request reuse, explicit regeneration,
-known/unknown usage, conservative reservations, spending cutoff, concurrent
-reservation attempts, pending-request protection, stale notes/snapshots, duplicate
-imports, refused/invalid output, role permissions and CSRF. Provider responses
-are simulated. Financial findings and manual workflow state remain unchanged.
+## Correction verified during preparation
 
-## Pending on your Windows machine
+- Prisma generation, lint, type checks and API/frontend builds passed.
+- 61 unit/API tests passed; 38 database tests skip in the ordinary command.
+- All 17 summary/database integration tests passed in embedded PostgreSQL through
+  a single-connection socket pool, including the two new correction cases.
+- The unchanged 21 authentication/financial database tests were already verified
+  in the user's initial Milestone 5 run; they were not unnecessarily rerun here.
+- 16 Python tests passed under Python 3.12 with the pinned requirements. The existing
+  Starlette/httpx deprecation warning remains.
+- All 16 offline evaluation cases passed, including replay of the three uploaded
+  v1 outputs: the observed P002/P003 failures reject and P006 accepts under v2.
+- The patch applied to the delivered Milestone 5 source and resulting files were
+  compared with the prepared correction source.
 
-- Docker rebuild and actual PostgreSQL 17 migration deployment.
-- All 36 tests through verify:db with the normal database connection pool.
-- Python tests in the Python 3.13 container.
-- Live infrastructure/queue checks and authenticated data verification.
-- All 11 browser tests and the manual operator/viewer walkthrough.
-- One explicitly requested live OpenAI summary, then a small manually reviewed
-  sample if the first call succeeds.
-
-Docker and a usable Chromium binary are unavailable in this preparation session.
-The earlier Chromium download attempt failed; the expanded browser tests are
-included for your existing working Windows setup. Embedded-database results are
-not a claim of multi-connection PostgreSQL or Docker validation.
-
-Live model factual accuracy, unsupported-claim rate, latency and cost are not yet
-measured. The UI records token usage and estimates cost when real calls run;
-manual evaluation exports preserve unreviewed scores as null. No account key was
-requested, supplied or used during package preparation.
+No paid requests were made. Docker, the 11 browser tests, normal multi-connection
+PostgreSQL checks and live v2 output require the user's environment. The v2 prompt
+has not yet demonstrated live-quality improvement; no new accuracy claim is made.
+The guard is deliberately limited and does not replace human factual review.

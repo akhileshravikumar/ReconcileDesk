@@ -2,8 +2,8 @@
   "status": "not_run",
   "git_commit": null,
   "model": "gpt-4.1-mini",
-  "prompt_version": "case-summary-v1",
-  "dataset_version": "summary-contract-v1",
+  "prompt_version": "case-summary-v2",
+  "dataset_version": "summary-contract-v2",
   "cases": [],
   "summary": {
     "case_count": null,

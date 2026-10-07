@@ -85,7 +85,7 @@ test('operator explicitly generates a summary and can inspect its cited evidence
 test('viewer reads stale summaries without generation controls',async({page})=>{
  await page.route('**/api/auth/session',route=>route.fulfill({json:{user:{...user,role:'VIEWER'},csrfToken:'a'.repeat(64)}}));
  await page.route('**/api/investigations/case-ai/summaries',route=>route.fulfill({json:{enabled:true,sourceHash:'b'.repeat(64),blockedReason:null,model:'gpt-4.1-mini',budget:aiBudget,summaries:[{...savedSummary,stale:true}]}}));
- await openAiCase(page);await expect(page.getByText('Source evidence has changed.',{exact:false})).toBeVisible();await expect(page.getByText('The settlement is missing.')).toBeVisible();await expect(page.getByRole('button',{name:'Generate AI summary'})).toHaveCount(0);await expect(page.getByRole('button',{name:'Regenerate (paid call)'})).toHaveCount(0);
+ await openAiCase(page);await expect(page.getByText('Source evidence or summary rules have changed.',{exact:false})).toBeVisible();await expect(page.getByText('The settlement is missing.')).toBeVisible();await expect(page.getByRole('button',{name:'Generate AI summary'})).toHaveCount(0);await expect(page.getByRole('button',{name:'Regenerate (paid call)'})).toHaveCount(0);
 });
 test('budget exhaustion disables a new paid request',async({page})=>{
  await page.route('**/api/investigations/case-ai/summaries',route=>route.fulfill({json:{enabled:true,sourceHash:'a'.repeat(64),blockedReason:null,model:'gpt-4.1-mini',budget:{...aiBudget,spentMicros:1000000,availableMicros:0},summaries:[]}}));

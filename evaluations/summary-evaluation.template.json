@@ -1,9 +1,9 @@
 {
   "status": "not_run",
   "git_commit": null,
-  "model": null,
-  "prompt_version": null,
-  "dataset_version": null,
+  "model": "gpt-4.1-mini",
+  "prompt_version": "case-summary-v1",
+  "dataset_version": "summary-contract-v1",
   "cases": [],
   "summary": {
     "case_count": null,
@@ -20,6 +20,9 @@
     "No instructions in imported records override system instructions."
   ],
   "notes": [
-    "AI generation is not implemented in milestone 2."
+    "Milestone 5 implements generation; live model quality remains unmeasured until reviewed.",
+    "Run evaluate:ai for zero-cost contract fixtures only.",
+    "Export real summaries from the UI, review evidence manually, and run evaluate:ai:report.",
+    "Do not treat valid citations as proof that a claim is supported."
   ]
 }

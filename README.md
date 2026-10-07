@@ -3,9 +3,9 @@
 A local payment reconciliation portfolio application built with React, TypeScript,
 Express, PostgreSQL/Prisma, Redis/BullMQ and a FastAPI service foundation.
 
-**Current stage: Milestone 4 — authentication, investigations and audit.**
+**Current stage: Milestone 5 — private AI summaries with a $1 lifetime budget.**
 
-Start with [docs/MILESTONE_4.md](docs/MILESTONE_4.md) for Windows setup, patching,
+Start with [docs/MILESTONE_5.md](docs/MILESTONE_5.md) for Windows setup, patching,
 verification, demo expectations, metrics and Git commands. Read
 [docs/CSV_CONTRACT.md](docs/CSV_CONTRACT.md) for the exact format and approved rules.
 
@@ -22,7 +22,11 @@ verification, demo expectations, metrics and Git commands. Read
 - Operator assignments, notes, resolution/reopening and stale-edit protection.
 - Transactional audit history with database UPDATE/DELETE protection.
 
-OpenAI summaries and public hosting are later milestones. This release
+- Evidence-linked GPT-4.1 mini summaries with manual generation, stale detection and history.
+- Persistent spending reservations, zero-cost automated tests and manual evaluation exports.
+
+Live AI is disabled by default; follow the Milestone 5 guide to enable it privately.
+Public hosting is not enabled. This release
 remains bound to localhost and uses synthetic data.
 
 ## Start locally
@@ -52,11 +56,13 @@ backend/worker changes. `docker compose down` retains database volumes.
 | apps/api/src/auth.ts | Passwords, sessions, CSRF and permissions |
 | apps/api/src/investigations.ts | Assignment, notes and workflow |
 | apps/api/src/audit.ts | Transactional audit event creation |
+| apps/api/src/summaries.ts | Evidence, budget reservations and summary persistence |
+| apps/api/src/summary-contract.ts | Model, price and output validation |
 | apps/api/prisma/ | Schema and additive migrations |
 | apps/api/tests/ | Unit, API and isolated-database tests |
 | apps/web/src/ | React workspace and reports |
 | data/demo/ | Synthetic CSVs and expected outcomes |
-| services/ai/ | FastAPI foundation; no model calls yet |
+| services/ai/ | Protected, bounded OpenAI summary service |
 | metrics/, evaluations/ | Measurement templates and local outputs |
 
 Read AGENTS.md and inspect existing files before asking Cursor to edit. Review

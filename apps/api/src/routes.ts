@@ -1,6 +1,8 @@
 import { Router, text, json, type ErrorRequestHandler } from 'express';
 import {actorOf,type Guards} from './auth.js';
 import {actionSchema,type Investigations} from './investigations.js';
+import {generationSchema} from './summary-contract.js';
+import type {Summaries} from './summaries.js';
 import type { Store } from './store.js';
 import { InputError, kindOf } from './domain.js';
 function pageOf(value:unknown) {
@@ -8,7 +10,7 @@ function pageOf(value:unknown) {
   if(typeof value!=='string'|| !/^[1-9]\d{0,6}$/.test(value)) throw new InputError('page must be a positive integer.');
   return Number(value);
 }
-export function domainRoutes(store:Store,guards:Guards,investigations?:Investigations) {
+export function domainRoutes(store:Store,guards:Guards,investigations?:Investigations,summaries?:Summaries) {
   const router=Router();
   router.use(guards.read,guards.write);
   router.get('/workspace',async(_req,res)=>{res.json(await store.workspace());});
@@ -37,6 +39,13 @@ export function domainRoutes(store:Store,guards:Guards,investigations?:Investiga
       res.json(await investigations.act(String(req.params.id),action.data,actorOf(res)));
     });
     router.get('/audit',async(req,res)=>{res.json(await investigations.history(pageOf(req.query.page),typeof req.query.entityId==='string'?req.query.entityId:undefined));});
+  }
+  if(summaries) {
+    router.get('/investigations/:id/summaries',async(req,res)=>{res.json(await summaries.view(String(req.params.id)));});
+    router.post('/investigations/:id/summaries',json({limit:'2kb'}),async(req,res)=>{
+      const input=generationSchema.safeParse(req.body);if(!input.success)throw new InputError('Supply a request ID and current source hash.');
+      res.json(await summaries.generate(String(req.params.id),input.data,actorOf(res)));
+    });
   }
   return router;
 }

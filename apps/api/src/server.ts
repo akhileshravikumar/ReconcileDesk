@@ -1,3 +1,5 @@
+import {createSummaries} from './summaries.js';
+import {httpSummaryProvider} from './summary-contract.js';
 import { Router } from 'express';
 import { createAuth } from './auth.js';
 import { createInvestigations } from './investigations.js';
@@ -13,11 +15,12 @@ const db = createDatabase(config.DATABASE_URL);
 const redis = createRedis(config.REDIS_URL);
 redis.on('error', () => logger.warn('Redis unavailable'));
 const auth=createAuth(db,{origins:config.AUTH_ORIGINS.split(',').map(s=>s.trim()),secureCookie:config.NODE_ENV==='production'});
-const routes=Router();routes.use(auth.routes);routes.use(domainRoutes(createStore(db),auth.guards,createInvestigations(db)));
+const summaries=createSummaries(db,httpSummaryProvider(config.AI_SERVICE_URL,config.AI_INTERNAL_TOKEN),config.AI_SUMMARIES_ENABLED==='true'&&config.AI_INTERNAL_TOKEN.length>=64);
+const routes=Router();routes.use(auth.routes);routes.use(domainRoutes(createStore(db),auth.guards,createInvestigations(db),summaries));
 const app = createApp({
   database: async () => {
     const marker = await db.systemMetadata.findUnique({ where: { key: 'milestone' } });
-    if (marker?.value !== '4') throw new Error('Migration missing');
+    if (marker?.value !== '5') throw new Error('Migration missing');
   },
   redis: () => redis.ping(),
   worker: async () => { if (!await redis.get(heartbeatKey)) throw new Error('Worker heartbeat missing'); },

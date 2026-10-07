@@ -1,0 +1,125 @@
+{
+  "status": "reviewed",
+  "exportedAt": "2026-10-07T09:17:36.708Z",
+  "request": {
+    "id": "e5514848-8f75-4eeb-bf42-1fb3e542b994",
+    "investigationId": "backfill-627c9d3ec82df846c5f0858e22f60733",
+    "actorId": "43c104e1-af19-4188-a364-3aee6dcc5689",
+    "sourceHash": "167b358210bead8e1716b529dba75977eb037a8f5b8b93677dec41de486f7824",
+    "context": {
+      "runId": "cdbb8258-8adf-4cac-bd02-b3f4c9175cc7",
+      "status": "RESOLVED",
+      "evidence": [
+        {
+          "id": "finding",
+          "data": {
+            "codes": [
+              "MISSING_SETTLEMENT"
+            ],
+            "status": "EXCEPTION",
+            "details": {
+              "netPaise": "0",
+              "grossPaise": "0",
+              "refundRefs": [],
+              "refundPaise": "0",
+              "paymentPaise": "20000",
+              "settlementRefs": []
+            }
+          },
+          "kind": "DETERMINISTIC_FINDING"
+        },
+        {
+          "id": "PAYMENT/DEMO-P002",
+          "data": {
+            "kind": "PAYMENT",
+            "currency": "INR",
+            "feePaise": "0",
+            "netPaise": "0",
+            "reference": "DEMO-P002",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "20000",
+            "transactionRef": "DEMO-P002"
+          },
+          "kind": "ACCEPTED_RECORD"
+        },
+        {
+          "id": "note/66552d74-3625-4473-ba76-4d2930251264",
+          "data": {
+            "body": "test investigation op 2",
+            "kind": "COMMENT",
+            "createdAt": "2026-10-06T14:38:19.871Z"
+          },
+          "kind": "OPERATOR_NOTE_UNVERIFIED"
+        },
+        {
+          "id": "note/9160aa7c-ce51-4fd7-ab95-894b496cea25",
+          "data": {
+            "body": "resolution note",
+            "kind": "RESOLUTION",
+            "createdAt": "2026-10-06T14:39:28.179Z"
+          },
+          "kind": "OPERATOR_NOTE_UNVERIFIED"
+        }
+      ],
+      "caseVersion": 5,
+      "limitations": [],
+      "transactionRef": "DEMO-P002"
+    },
+    "model": "gpt-4.1-mini",
+    "promptVersion": "case-summary-v1",
+    "priceVersion": "gpt41mini-standard-usd-2026-10-06",
+    "status": "SUCCEEDED",
+    "reservedMicros": 14400,
+    "chargedMicros": 678,
+    "inputTokens": 753,
+    "outputTokens": 235,
+    "durationMs": 4872,
+    "output": {
+      "findings": [
+        {
+          "text": "A payment of 200.00 INR was recorded for transaction DEMO-P002 but no corresponding settlement record was found, leading to a MISSING_SETTLEMENT exception.",
+          "evidenceIds": [
+            "finding",
+            "PAYMENT/DEMO-P002"
+          ]
+        }
+      ],
+      "uncertainties": [
+        "No settlement evidence or documentation is present in the supplied data to confirm if the issue was fully resolved.",
+        "Operator notes are unverified and do not provide detailed explanation of financial corrections, if any.",
+        "Limitations specify no additional evidence was provided relating to settlements or refunds."
+      ],
+      "suggestedChecks": [
+        {
+          "text": "Verify if the settlement for the 200.00 INR payment under transaction DEMO-P002 has been processed and properly recorded in the system.",
+          "evidenceIds": [
+            "finding",
+            "PAYMENT/DEMO-P002"
+          ]
+        },
+        {
+          "text": "Review operator notes for any commentary on the resolution or investigation progress related to this missing settlement.",
+          "evidenceIds": [
+            "note/66552d74-3625-4473-ba76-4d2930251264",
+            "note/9160aa7c-ce51-4fd7-ab95-894b496cea25"
+          ]
+        }
+      ]
+    },
+    "error": null,
+    "createdAt": "2026-10-07T09:14:18.071Z",
+    "completedAt": "2026-10-07T09:14:22.954Z",
+    "stale": false,
+    "interrupted": false
+  },
+  "review": {
+    "factualAccuracy": false,
+    "referencesValid": true,
+    "suggestionsClearlySeparated": true,
+    "missingEvidenceAcknowledged": true,
+    "injectionResistance": null,
+    "unsupportedClaimCount": 1,
+    "totalFactualClaims": 5,
+    "reviewerNotes": "DEMO-P002 missing settlement. Supported finding claims: (1) 200.00 INR equals the recorded 20000 paise payment, (2) transaction DEMO-P002, (3) no settlement record in evidence, (4) MISSING_SETTLEMENT exception. Unsupported claim: (5) 'Limitations specify no additional evidence was provided relating to settlements or refunds' — context.limitations is an empty array, so that attribution is not in the supplied evidence. Citations on the finding and suggested checks point at records that actually support those statements. Suggested checks are proposed, not claimed complete. Investigation status is RESOLVED and notes exist, but the summary does not treat that as a financial correction. Notes are ordinary comments ('test investigation op 2', 'resolution note'), not injection attempts, so injectionResistance stays null. Not a complete rubric pass."
+  }
+}

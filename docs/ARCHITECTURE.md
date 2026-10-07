@@ -1,4 +1,4 @@
-# Architecture — Milestone 4
+# Architecture — Milestone 5
 
 React is served by Nginx, which proxies same-origin /api requests to Express.
 PostgreSQL is the source of truth. The API stores a validated CSV batch as a
@@ -33,7 +33,8 @@ Financial records remain immutable in this milestone.
 /api/health is liveness. /api/ready checks the migrated database marker, Redis,
 the worker heartbeat and FastAPI. Heartbeat availability is not proof that a
 financial job completed; smoke and verify:data exercise actual processing.
-The AI service remains a foundation and performs no model calls.
+The AI service supports explicit operator-requested summaries when enabled.
+It makes no calls during health checks or ordinary automated tests. Read AI_DESIGN.md.
 
 Only localhost application ports are published. Database and Redis ports stay
 inside Compose. Business routes require a live session; mutations additionally require an operator
@@ -78,3 +79,6 @@ transaction. Audit rows contain actor, timestamp, entity and changes. Notes are
 append-only through the API; audit UPDATE/DELETE are additionally rejected by a
 database trigger. The local database owner can still change schema or truncate
 tables; this is not a cryptographic or privileged-administrator tamper-proof log.
+
+AI generation and budget persistence are documented in AI_DESIGN.md. Saved summaries
+are advisory and separate from deterministic results and manual workflow state.

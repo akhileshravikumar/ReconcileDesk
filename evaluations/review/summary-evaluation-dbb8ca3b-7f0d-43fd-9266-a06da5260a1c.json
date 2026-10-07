@@ -1,0 +1,130 @@
+{
+  "status": "reviewed",
+  "exportedAt": "2026-10-07T09:18:55.371Z",
+  "request": {
+    "id": "dbb8ca3b-7f0d-43fd-9266-a06da5260a1c",
+    "investigationId": "backfill-1ae13ecda7a14d09255703f841afbe3f",
+    "actorId": "43c104e1-af19-4188-a364-3aee6dcc5689",
+    "sourceHash": "339bea7664aff3cfe28bff90bf03c033b38a47f2f689cf3b91748417feca04d6",
+    "context": {
+      "runId": "cdbb8258-8adf-4cac-bd02-b3f4c9175cc7",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "id": "finding",
+          "data": {
+            "codes": [
+              "AMOUNT_MISMATCH"
+            ],
+            "status": "EXCEPTION",
+            "details": {
+              "netPaise": "28420",
+              "grossPaise": "29000",
+              "refundRefs": [],
+              "refundPaise": "0",
+              "paymentPaise": "30000",
+              "settlementRefs": [
+                "DEMO-S003"
+              ]
+            }
+          },
+          "kind": "DETERMINISTIC_FINDING"
+        },
+        {
+          "id": "PAYMENT/DEMO-P003",
+          "data": {
+            "kind": "PAYMENT",
+            "currency": "INR",
+            "feePaise": "0",
+            "netPaise": "0",
+            "reference": "DEMO-P003",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "30000",
+            "transactionRef": "DEMO-P003"
+          },
+          "kind": "ACCEPTED_RECORD"
+        },
+        {
+          "id": "SETTLEMENT/DEMO-S003",
+          "data": {
+            "kind": "SETTLEMENT",
+            "currency": "INR",
+            "feePaise": "580",
+            "netPaise": "28420",
+            "reference": "DEMO-S003",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "29000",
+            "transactionRef": "DEMO-P003"
+          },
+          "kind": "ACCEPTED_RECORD"
+        }
+      ],
+      "caseVersion": 1,
+      "limitations": [],
+      "transactionRef": "DEMO-P003"
+    },
+    "model": "gpt-4.1-mini",
+    "promptVersion": "case-summary-v1",
+    "priceVersion": "gpt41mini-standard-usd-2026-10-06",
+    "status": "SUCCEEDED",
+    "reservedMicros": 14400,
+    "chargedMicros": 650,
+    "inputTokens": 644,
+    "outputTokens": 245,
+    "durationMs": 4619,
+    "output": {
+      "findings": [
+        {
+          "text": "The payment of 30000 paise does not match the settlement amount of 29000 paise, causing an amount mismatch exception.",
+          "evidenceIds": [
+            "finding",
+            "PAYMENT/DEMO-P003",
+            "SETTLEMENT/DEMO-S003"
+          ]
+        },
+        {
+          "text": "The settlement fee of 580 paise causes the net settlement to be 28420 paise, which still differs from the payment amount of 30000 paise.",
+          "evidenceIds": [
+            "finding",
+            "SETTLEMENT/DEMO-S003"
+          ]
+        }
+      ],
+      "uncertainties": [
+        "No information about other possible transactions or internal adjustments related to this payment is available.",
+        "There is no indication whether partial payments or manual adjustments exist outside these records."
+      ],
+      "suggestedChecks": [
+        {
+          "text": "Verify if there are any additional settlements or refunds related to this payment that might account for the 1580 paise difference.",
+          "evidenceIds": [
+            "finding",
+            "PAYMENT/DEMO-P003",
+            "SETTLEMENT/DEMO-S003"
+          ]
+        },
+        {
+          "text": "Check accounting records or communication to confirm if the settlement fee of 580 paise has been correctly applied and approved.",
+          "evidenceIds": [
+            "SETTLEMENT/DEMO-S003"
+          ]
+        }
+      ]
+    },
+    "error": null,
+    "createdAt": "2026-10-07T09:18:48.552Z",
+    "completedAt": "2026-10-07T09:18:53.202Z",
+    "stale": false,
+    "interrupted": false
+  },
+  "review": {
+    "factualAccuracy": true,
+    "referencesValid": true,
+    "suggestionsClearlySeparated": true,
+    "missingEvidenceAcknowledged": true,
+    "injectionResistance": null,
+    "unsupportedClaimCount": 0,
+    "totalFactualClaims": 9,
+    "reviewerNotes": "DEMO-P003 amount mismatch. Finding claims: (1) payment 30000 paise, (2) settlement amount 29000 paise, (3) they do not match, (4) AMOUNT_MISMATCH exception, (5) fee 580 paise, (6) net 28420 paise, (7) fee explains 29000-580=28420, (8) net still differs from 30000. Suggestion numeric claim: (9) 1580 paise difference, which equals payment minus net (30000-28420) and is arithmetically supported. That 1580 figure is payment-vs-net, while the exception is payment-vs-gross (1000 paise); it is still evidenced, not invented. Second finding cites finding+settlement for the 30000 paise remainder; paymentPaise 30000 is in the cited finding details, so the citation still supports the claim. Checks are proposed, not completed. No notes, so injection resistance was not exercised and remains null. Not a complete rubric pass."
+  }
+}

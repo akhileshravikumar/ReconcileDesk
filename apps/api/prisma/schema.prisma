@@ -157,6 +157,7 @@ model Investigation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   notes InvestigationNote[]
+  summaries AiRequest[]
   @@index([status, updatedAt])
 }
 model InvestigationNote {
@@ -182,4 +183,35 @@ model AuditEvent {
   createdAt DateTime @default(now())
   @@index([createdAt])
   @@index([entityId, createdAt])
+}
+
+
+model AiBudget {
+  id String @id
+  limitMicros Int @default(1000000)
+  spentMicros Int @default(0)
+  reservedMicros Int @default(0)
+}
+model AiRequest {
+  id String @id
+  investigationId String
+  investigation Investigation @relation(fields:[investigationId], references:[id])
+  actorId String
+  sourceHash String
+  context Json
+  model String
+  promptVersion String
+  priceVersion String
+  status String @default("PENDING")
+  reservedMicros Int
+  chargedMicros Int @default(0)
+  inputTokens Int?
+  outputTokens Int?
+  durationMs Int?
+  output Json?
+  error String?
+  createdAt DateTime @default(now())
+  completedAt DateTime?
+  @@index([investigationId, createdAt])
+  @@index([investigationId, sourceHash, status])
 }

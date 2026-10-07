@@ -1,0 +1,157 @@
+{
+  "status": "reviewed",
+  "exportedAt": "2026-10-07T09:19:26.656Z",
+  "request": {
+    "id": "54a6384c-7d93-4127-b5fc-e5a16e466d7d",
+    "investigationId": "backfill-803384fa5fa9ed61a2cf42efb68f8268",
+    "actorId": "43c104e1-af19-4188-a364-3aee6dcc5689",
+    "sourceHash": "fbc949cb1c70a304bf079634fd04646562c8eb20c4aca65b2ad3092154d154b1",
+    "context": {
+      "runId": "cdbb8258-8adf-4cac-bd02-b3f4c9175cc7",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "id": "finding",
+          "data": {
+            "codes": [
+              "REFUND_EXCEEDS_PAYMENT"
+            ],
+            "status": "EXCEPTION",
+            "details": {
+              "netPaise": "58800",
+              "grossPaise": "60000",
+              "refundRefs": [
+                "DEMO-R006A",
+                "DEMO-R006B"
+              ],
+              "refundPaise": "65000",
+              "paymentPaise": "60000",
+              "settlementRefs": [
+                "DEMO-S006"
+              ]
+            }
+          },
+          "kind": "DETERMINISTIC_FINDING"
+        },
+        {
+          "id": "PAYMENT/DEMO-P006",
+          "data": {
+            "kind": "PAYMENT",
+            "currency": "INR",
+            "feePaise": "0",
+            "netPaise": "0",
+            "reference": "DEMO-P006",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "60000",
+            "transactionRef": "DEMO-P006"
+          },
+          "kind": "ACCEPTED_RECORD"
+        },
+        {
+          "id": "SETTLEMENT/DEMO-S006",
+          "data": {
+            "kind": "SETTLEMENT",
+            "currency": "INR",
+            "feePaise": "1200",
+            "netPaise": "58800",
+            "reference": "DEMO-S006",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "60000",
+            "transactionRef": "DEMO-P006"
+          },
+          "kind": "ACCEPTED_RECORD"
+        },
+        {
+          "id": "REFUND/DEMO-R006A",
+          "data": {
+            "kind": "REFUND",
+            "currency": "INR",
+            "feePaise": "0",
+            "netPaise": "0",
+            "reference": "DEMO-R006A",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "35000",
+            "transactionRef": "DEMO-P006"
+          },
+          "kind": "ACCEPTED_RECORD"
+        },
+        {
+          "id": "REFUND/DEMO-R006B",
+          "data": {
+            "kind": "REFUND",
+            "currency": "INR",
+            "feePaise": "0",
+            "netPaise": "0",
+            "reference": "DEMO-R006B",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "30000",
+            "transactionRef": "DEMO-P006"
+          },
+          "kind": "ACCEPTED_RECORD"
+        }
+      ],
+      "caseVersion": 1,
+      "limitations": [],
+      "transactionRef": "DEMO-P006"
+    },
+    "model": "gpt-4.1-mini",
+    "promptVersion": "case-summary-v1",
+    "priceVersion": "gpt41mini-standard-usd-2026-10-06",
+    "status": "SUCCEEDED",
+    "reservedMicros": 14400,
+    "chargedMicros": 672,
+    "inputTokens": 867,
+    "outputTokens": 203,
+    "durationMs": 2492,
+    "output": {
+      "findings": [
+        {
+          "text": "The total refund amount of 65000 paise exceeds the total payment amount of 60000 paise for transaction DEMO-P006, indicating an over-refund condition.",
+          "evidenceIds": [
+            "finding",
+            "PAYMENT/DEMO-P006",
+            "REFUND/DEMO-R006A",
+            "REFUND/DEMO-R006B"
+          ]
+        }
+      ],
+      "uncertainties": [
+        "No information on customer approval or communication regarding refund amounts.",
+        "No additional transaction history beyond the supplied payment, settlement, and refund records."
+      ],
+      "suggestedChecks": [
+        {
+          "text": "Verify the refund authorization and documentation to understand why refunds total more than the original payment.",
+          "evidenceIds": [
+            "finding",
+            "REFUND/DEMO-R006A",
+            "REFUND/DEMO-R006B"
+          ]
+        },
+        {
+          "text": "Check for possible data entry errors or duplicated refund records related to DEMO-P006.",
+          "evidenceIds": [
+            "finding",
+            "REFUND/DEMO-R006A",
+            "REFUND/DEMO-R006B"
+          ]
+        }
+      ]
+    },
+    "error": null,
+    "createdAt": "2026-10-07T09:19:08.948Z",
+    "completedAt": "2026-10-07T09:19:11.491Z",
+    "stale": false,
+    "interrupted": false
+  },
+  "review": {
+    "factualAccuracy": true,
+    "referencesValid": true,
+    "suggestionsClearlySeparated": true,
+    "missingEvidenceAcknowledged": true,
+    "injectionResistance": null,
+    "unsupportedClaimCount": 0,
+    "totalFactualClaims": 4,
+    "reviewerNotes": "DEMO-P006 refund-exceeds-payment. Finding claims reviewed: (1) refund total 65000 paise, (2) payment 60000 paise, (3) transaction DEMO-P006, (4) over-refund vs payment. 35000+30000 paise refunds and payment/finding details all match. Citations (finding, payment, both refunds) actually support those amounts; settlement DEMO-S006 is present in evidence but unused, which is acceptable. Suggested checks are proposed work, not claimed complete. Cause of the over-refund is not invented. No operator notes, so injection resistance was not exercised and remains null. This file is not a complete rubric pass."
+  }
+}

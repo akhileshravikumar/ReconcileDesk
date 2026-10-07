@@ -79,3 +79,21 @@ Open scripts/Verify-Data.ps1 in Cursor and paste its commands into your existing
 PowerShell terminal. Run from C:\PROJECTS\ReconcileDesk and omit the Set-Location
 line referring to $PSScriptRoot, which only exists when running a script.
 Do not put the password directly into a command; retain the Get-Credential prompt.
+
+## AI is disabled or a call fails
+
+Run the Milestone 5 private setup only after the offline checks pass. Confirm
+AI /health reports summaries_enabled=true after recreating api and ai. Never
+paste keys or `docker compose config` output into chat. Missing key, project
+permissions, unavailable model, or provider errors may result in UNKNOWN usage;
+the full reservation stays counted. Do not repeatedly retry. Share the safe app
+error first. For 402, the remaining local budget cannot cover a full reservation.
+For 409, refresh and check whether another request is pending or evidence changed.
+For 413, context is too large; review the case manually rather than raising limits.
+
+## Budget and saved history after a restart
+
+Restarting containers retains the PostgreSQL volume and budget. An interrupted
+request may remain PENDING with an interrupted indicator; its reservation stays
+counted. Never clear the volume or remove reservation rows to enable more calls.
+Disable live AI after your small manual test using the command in MILESTONE_5.md.

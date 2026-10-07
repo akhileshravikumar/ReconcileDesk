@@ -16,9 +16,11 @@
     "fixtures": "node --import tsx src/fixtures.ts",
     "evaluate": "node --import tsx src/evaluate.ts",
     "verify:data": "node dist/verify-data.js",
-    "test:db": "vitest run tests/database.integration.test.ts tests/auth.integration.test.ts --no-file-parallelism",
+    "test:db": "vitest run tests/database.integration.test.ts tests/auth.integration.test.ts tests/summaries.integration.test.ts --no-file-parallelism",
     "verify:db": "node dist/verify-database.js",
-    "seed:demo": "node dist/seed-demo.js"
+    "seed:demo": "node dist/seed-demo.js",
+    "evaluate:ai": "node --import tsx src/evaluate-summaries.ts",
+    "evaluate:ai:report": "node --import tsx src/report-summary-evaluation.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",

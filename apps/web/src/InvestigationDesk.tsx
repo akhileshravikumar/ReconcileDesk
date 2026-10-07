@@ -1,5 +1,6 @@
 import {useCallback,useEffect,useState} from 'react';
 import {request,type User} from './client';
+import {SummaryPanel} from './SummaryPanel';
 type Case={id:string;transactionRef:string;status:'OPEN'|'IN_PROGRESS'|'RESOLVED';assigneeId:string|null;assignee:User|null;version:number;updatedAt:string};
 type Note={id:string;body:string;kind:string;createdAt:string;author:User};
 type Detail={investigation:Case&{notes:Note[]};finding:{status:string;codes:string[]}|null};
@@ -34,7 +35,7 @@ export function InvestigationDesk({user,snapshotId}:{user:User;snapshotId:string
         <div className="status-controls">{selected.investigation.status==='OPEN'&&<button disabled={busy} onClick={()=>{void act({action:'STATUS',status:'IN_PROGRESS'});}}>Start investigation</button>}
           {selected.investigation.status==='IN_PROGRESS'&&<><label className="note-label">Resolution note<textarea maxLength={2000} value={resolution} onChange={e=>setResolution(e.target.value)}/></label><button disabled={busy||!resolution.trim()} onClick={()=>{void act({action:'STATUS',status:'RESOLVED',note:resolution});}}>Resolve investigation</button></>}
           {selected.investigation.status==='RESOLVED'&&<button disabled={busy} onClick={()=>{void act({action:'STATUS',status:'OPEN'});}}>Reopen investigation</button>}</div></>}
-      <h3>Notes</h3>{selected.investigation.notes.length?selected.investigation.notes.map(n=><article className="case-note" key={n.id}><small>{n.author.displayName} · {n.kind} · {new Date(n.createdAt).toLocaleString()}</small><p>{n.body}</p></article>):<p className="muted">No notes yet.</p>}
+      <SummaryPanel key={selected.investigation.id} investigationId={selected.investigation.id} user={user} version={selected.investigation.version} snapshotId={snapshotId}/><h3>Notes</h3>{selected.investigation.notes.length?selected.investigation.notes.map(n=><article className="case-note" key={n.id}><small>{n.author.displayName} · {n.kind} · {new Date(n.createdAt).toLocaleString()}</small><p>{n.body}</p></article>):<p className="muted">No notes yet.</p>}
       <button onClick={()=>{setAuditEntity(selected.investigation.id);setAuditPage(1);}}>Show this investigation’s audit history</button></div>}
   </section><section className="panel" id="audit"><div className="section-heading"><div><h2>Audit history</h2><p>Read-only events with actors, timestamps and changes.</p></div><button onClick={()=>{if(!auditEntity&&auditPage===1)void load();setAuditEntity('');setAuditPage(1);}}>Show all events</button></div>
     {auditEntity&&<p className="muted">Filtered to investigation {auditEntity}</p>}<div className="table-scroll"><table><thead><tr><th>Time</th><th>Actor</th><th>Action / entity</th><th>Changes</th></tr></thead><tbody>{events.map(event=><tr key={event.id}><td>{new Date(event.createdAt).toLocaleString()}</td><td>{event.actorLabel}</td><td>{event.action}<small>{event.entityType} · {event.entityId}</small></td><td><pre>{JSON.stringify(event.details,null,2)}</pre></td></tr>)}</tbody></table></div>

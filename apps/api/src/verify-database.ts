@@ -16,12 +16,12 @@ try {
   const target=new URL(source);target.pathname=`/${name}`;
   const isolated=new Pool({connectionString:target.toString(),max:1});
   try {
-    for(const migration of ['202610060001_foundation','202610060002_imports_reconciliation','202610060003_auth_investigations']) {
+    for(const migration of ['202610060001_foundation','202610060002_imports_reconciliation','202610060003_auth_investigations','202610060004_ai_summaries']) {
       await isolated.query(await readFile(join(projectRoot,'apps/api/prisma/migrations',migration,'migration.sql'),'utf8'));
     }
   } finally {await isolated.end();}
   console.log('Running integration tests in a newly created, isolated test database.');
-  const child=spawn(process.execPath,[join(projectRoot,'node_modules/vitest/vitest.mjs'),'run','tests/database.integration.test.ts','tests/auth.integration.test.ts','--no-file-parallelism'],{
+  const child=spawn(process.execPath,[join(projectRoot,'node_modules/vitest/vitest.mjs'),'run','tests/database.integration.test.ts','tests/auth.integration.test.ts','tests/summaries.integration.test.ts','--no-file-parallelism'],{
     cwd:join(projectRoot,'apps/api'),stdio:'inherit',env:{...process.env,TEST_DATABASE_URL:target.toString()}
   });
   const exitCode=await new Promise<number>((resolve,reject)=>{child.on('error',reject);child.on('exit',code=>resolve(code??1));});

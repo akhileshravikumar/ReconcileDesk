@@ -1,6 +1,7 @@
 # ReconcileDesk working agreement
 
-Current stage: milestone 4, sessions, roles, investigations and audit.
+Current stage: milestone 5, private AI summaries and evaluation.
+Read docs/MILESTONE_5.md and docs/AI_DESIGN.md for approved AI and budget rules.
 Read docs/MILESTONE_4.md for the approved access and workflow rules.
 Read docs/CSV_CONTRACT.md for the approved financial rules and representation.
 
@@ -23,3 +24,9 @@ Read docs/CSV_CONTRACT.md for the approved financial rules and representation.
 - Require authenticated reads and operator permissions plus CSRF for business writes.
 - Keep investigation decisions separate from financial classification.
 - Audit state changes in the same transaction; never expose credential hashes.
+
+- GPT-4.1 mini and a $1 lifetime application budget are explicitly approved.
+- Never make paid calls in automated tests, CI, fixtures or offline evaluation.
+- Preserve spending reservations across failures and restarts; do not reset the budget.
+- No automatic paid retries, public access, or financial writes from AI.
+- Price/model changes require review and user approval. Do not silently raise the cap.

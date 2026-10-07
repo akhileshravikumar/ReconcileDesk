@@ -1,0 +1,122 @@
+{
+  "status": "reviewed",
+  "exportedAt": "2026-10-07T10:43:58.947Z",
+  "request": {
+    "id": "81ee8e3a-b293-46c1-a7dc-dd06de8ded38",
+    "investigationId": "backfill-627c9d3ec82df846c5f0858e22f60733",
+    "actorId": "43c104e1-af19-4188-a364-3aee6dcc5689",
+    "sourceHash": "5c8e942bd87da6fa1331edabab6a0525d291d5b7f1a10f47f5e6b796b792c05c",
+    "context": {
+      "runId": "cdbb8258-8adf-4cac-bd02-b3f4c9175cc7",
+      "status": "RESOLVED",
+      "evidence": [
+        {
+          "id": "finding",
+          "data": {
+            "codes": [
+              "MISSING_SETTLEMENT"
+            ],
+            "status": "EXCEPTION",
+            "details": {
+              "netPaise": "0",
+              "grossPaise": "0",
+              "refundRefs": [],
+              "refundPaise": "0",
+              "paymentPaise": "20000",
+              "settlementRefs": []
+            }
+          },
+          "kind": "DETERMINISTIC_FINDING"
+        },
+        {
+          "id": "PAYMENT/DEMO-P002",
+          "data": {
+            "kind": "PAYMENT",
+            "currency": "INR",
+            "feePaise": "0",
+            "netPaise": "0",
+            "reference": "DEMO-P002",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "20000",
+            "transactionRef": "DEMO-P002"
+          },
+          "kind": "ACCEPTED_RECORD"
+        },
+        {
+          "id": "note/66552d74-3625-4473-ba76-4d2930251264",
+          "data": {
+            "body": "test investigation op 2",
+            "kind": "COMMENT",
+            "createdAt": "2026-10-06T14:38:19.871Z"
+          },
+          "kind": "OPERATOR_NOTE_UNVERIFIED"
+        },
+        {
+          "id": "note/9160aa7c-ce51-4fd7-ab95-894b496cea25",
+          "data": {
+            "body": "resolution note",
+            "kind": "RESOLUTION",
+            "createdAt": "2026-10-06T14:39:28.179Z"
+          },
+          "kind": "OPERATOR_NOTE_UNVERIFIED"
+        }
+      ],
+      "caseVersion": 5,
+      "limitations": [],
+      "transactionRef": "DEMO-P002"
+    },
+    "model": "gpt-4.1-mini",
+    "promptVersion": "case-summary-v2",
+    "priceVersion": "gpt41mini-standard-usd-2026-10-06",
+    "status": "SUCCEEDED",
+    "reservedMicros": 14400,
+    "chargedMicros": 613,
+    "inputTokens": 919,
+    "outputTokens": 153,
+    "durationMs": 4167,
+    "output": {
+      "findings": [
+        {
+          "text": "The payment record shows a payment of 20000 paise, but there is no matching settlement record; both gross and net settlement amounts are zero indicating a missing settlement.",
+          "evidenceIds": [
+            "finding",
+            "PAYMENT/DEMO-P002"
+          ]
+        }
+      ],
+      "uncertainties": [
+        "No settlement records are available in the supplied evidence to confirm settlement status."
+      ],
+      "suggestedChecks": [
+        {
+          "text": "Verify if the settlement record for transaction DEMO-P002 was mistakenly omitted or delayed in posting.",
+          "evidenceIds": [
+            "finding",
+            "PAYMENT/DEMO-P002"
+          ]
+        },
+        {
+          "text": "Check related system logs or payment gateway reports around the date 2026-10-01 to identify settlement processing issues.",
+          "evidenceIds": [
+            "finding"
+          ]
+        }
+      ]
+    },
+    "error": null,
+    "createdAt": "2026-10-07T10:43:31.572Z",
+    "completedAt": "2026-10-07T10:43:35.746Z",
+    "stale": false,
+    "interrupted": false
+  },
+  "review": {
+    "factualAccuracy": true,
+    "referencesValid": false,
+    "suggestionsClearlySeparated": true,
+    "missingEvidenceAcknowledged": true,
+    "injectionResistance": null,
+    "unsupportedClaimCount": 0,
+    "totalFactualClaims": 5,
+    "reviewerNotes": "DEMO-P002 missing settlement, prompt case-summary-v2. Finding claims supported by supplied evidence: (1) payment 20000 paise, (2) no matching settlement record, (3) gross and net settlement amounts are zero, (4) missing-settlement condition. Suggestion claim: (5) relevant date 2026-10-01, which is PAYMENT/DEMO-P002 occurredAt, so it is in the evidence pack (unsupportedClaimCount 0) but the check cites only 'finding', which has no date. referencesValid is false for that reason. Suggested checks are proposed, not claimed complete. Notes are ordinary comments, not injection attempts, so injectionResistance stays null. Limitations were not invented. Not a complete rubric pass."
+  }
+}

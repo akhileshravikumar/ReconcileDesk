@@ -1,0 +1,120 @@
+{
+  "status": "reviewed",
+  "exportedAt": "2026-10-07T10:44:30.419Z",
+  "request": {
+    "id": "3d153890-92de-4dcd-93cb-a9581449e0ef",
+    "investigationId": "backfill-1ae13ecda7a14d09255703f841afbe3f",
+    "actorId": "43c104e1-af19-4188-a364-3aee6dcc5689",
+    "sourceHash": "b35843c3d21f72d7c3826b15845a43a9b1acc401f32c5dc46bf4bb98ce69e242",
+    "context": {
+      "runId": "cdbb8258-8adf-4cac-bd02-b3f4c9175cc7",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "id": "finding",
+          "data": {
+            "codes": [
+              "AMOUNT_MISMATCH"
+            ],
+            "status": "EXCEPTION",
+            "details": {
+              "netPaise": "28420",
+              "grossPaise": "29000",
+              "refundRefs": [],
+              "refundPaise": "0",
+              "paymentPaise": "30000",
+              "settlementRefs": [
+                "DEMO-S003"
+              ]
+            }
+          },
+          "kind": "DETERMINISTIC_FINDING"
+        },
+        {
+          "id": "PAYMENT/DEMO-P003",
+          "data": {
+            "kind": "PAYMENT",
+            "currency": "INR",
+            "feePaise": "0",
+            "netPaise": "0",
+            "reference": "DEMO-P003",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "30000",
+            "transactionRef": "DEMO-P003"
+          },
+          "kind": "ACCEPTED_RECORD"
+        },
+        {
+          "id": "SETTLEMENT/DEMO-S003",
+          "data": {
+            "kind": "SETTLEMENT",
+            "currency": "INR",
+            "feePaise": "580",
+            "netPaise": "28420",
+            "reference": "DEMO-S003",
+            "occurredAt": "2026-10-01T10:00:00.000Z",
+            "amountPaise": "29000",
+            "transactionRef": "DEMO-P003"
+          },
+          "kind": "ACCEPTED_RECORD"
+        }
+      ],
+      "caseVersion": 1,
+      "limitations": [],
+      "transactionRef": "DEMO-P003"
+    },
+    "model": "gpt-4.1-mini",
+    "promptVersion": "case-summary-v2",
+    "priceVersion": "gpt41mini-standard-usd-2026-10-06",
+    "status": "SUCCEEDED",
+    "reservedMicros": 14400,
+    "chargedMicros": 587,
+    "inputTokens": 810,
+    "outputTokens": 164,
+    "durationMs": 2095,
+    "output": {
+      "findings": [
+        {
+          "text": "The payment amount is 30000 paise, but the settlement gross amount is 29000 paise, causing an AMOUNT_MISMATCH exception.",
+          "evidenceIds": [
+            "finding",
+            "PAYMENT/DEMO-P003",
+            "SETTLEMENT/DEMO-S003"
+          ]
+        }
+      ],
+      "uncertainties": [
+        "No evidence on underlying reasons for the payment and settlement amount mismatch is provided."
+      ],
+      "suggestedChecks": [
+        {
+          "text": "Verify the source and correctness of the payment record amount for reference DEMO-P003.",
+          "evidenceIds": [
+            "PAYMENT/DEMO-P003"
+          ]
+        },
+        {
+          "text": "Confirm that the settlement record DEMO-S003 truly corresponds to the payment DEMO-P003 and check for any missing transactions.",
+          "evidenceIds": [
+            "SETTLEMENT/DEMO-S003"
+          ]
+        }
+      ]
+    },
+    "error": null,
+    "createdAt": "2026-10-07T10:44:25.981Z",
+    "completedAt": "2026-10-07T10:44:28.082Z",
+    "stale": false,
+    "interrupted": false
+  },
+  "review": {
+    "factualAccuracy": true,
+    "referencesValid": true,
+    "suggestionsClearlySeparated": true,
+    "missingEvidenceAcknowledged": true,
+    "injectionResistance": null,
+    "unsupportedClaimCount": 0,
+    "totalFactualClaims": 3,
+    "reviewerNotes": "DEMO-P003 amount mismatch, prompt case-summary-v2. Finding claims: (1) payment 30000 paise, (2) settlement gross 29000 paise, (3) AMOUNT_MISMATCH exception. All match PAYMENT/DEMO-P003, SETTLEMENT/DEMO-S003 amountPaise/grossPaise, and the deterministic finding. Citations on the finding are the records that actually contain those amounts. Suggested checks are proposed verification, not claimed complete. Cause of the mismatch is not invented. No operator notes, so injection resistance was not exercised and remains null. This file is not a complete rubric pass."
+  }
+}
